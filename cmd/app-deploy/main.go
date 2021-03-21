@@ -23,7 +23,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/w6d-io/appdeploy/internal/util"
+	"github.com/w6d-io/app-deploy/internal/util"
+	"github.com/w6d-io/app-deploy/pkg/router"
 	"go.uber.org/zap/zapcore"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
@@ -71,4 +72,7 @@ func main() {
 
 	setupLog.Info("starting app-deploy", "Version", Version, "Built",
 		Built, "Revision", Revision, "Arch", OsArch, "GoVersion", GoVersion)
+	if err := router.Run(); err != nil {
+		setupLog.Error(err, "run server")
+	}
 }

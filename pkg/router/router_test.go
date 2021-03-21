@@ -20,7 +20,7 @@ import (
 	"github.com/gin-gonic/gin"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/w6d-io/appdeploy/pkg/router"
+	"github.com/w6d-io/app-deploy/pkg/router"
 	"time"
 )
 

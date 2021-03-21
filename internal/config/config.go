@@ -22,7 +22,7 @@ import (
 	"os"
 
 	"github.com/pkg/errors"
-	"github.com/w6d-io/appdeploy/internal/process"
+	"github.com/w6d-io/app-deploy/internal/process"
 	"gopkg.in/yaml.v3"
 
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -32,6 +32,7 @@ import (
 func New(filename string) error {
 	log := ctrl.Log.WithName("Config")
 	log.V(1).Info("read config file")
+	config = new(Config)
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Error(err, "error reading the configuration")

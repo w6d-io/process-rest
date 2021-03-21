@@ -106,6 +106,16 @@ func Execute(arg ...string) error {
 	return nil
 }
 
+func Reset() {
+	preScript = []string{}
+	deployScript = []string{}
+	postScript = []string{}
+}
+
 func Validate() bool {
-	return len(preScript) != 0 || len(deployScript) != 0 || len(postScript) != 0
+	log := ctrl.Log.WithName("Validate")
+	log.V(1).Info("contain", "pre_script", preScript,
+		"deploy_script", deployScript,
+		"post_script", postScript)
+	return len(deployScript) != 0
 }

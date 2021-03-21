@@ -17,12 +17,13 @@ Created on 20/03/2021
 package deploy
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/w6d-io/appdeploy/internal/process"
-	"github.com/w6d-io/appdeploy/pkg/handler"
-	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/w6d-io/app-deploy/internal/process"
+	"github.com/w6d-io/app-deploy/pkg/handler"
+	"gopkg.in/yaml.v3"
 )
 
 // @Param {payload}
@@ -30,34 +31,12 @@ import (
 // @Failure 500 {object} httputil.HTTPError
 // Deploy handle POST on /deploy
 func Deploy(c *gin.Context) {
-
-	log := logger
-	if err := c.BindJSON(payload); err != nil {
-		c.JSON(500, handler.Response{Message: "unmarshal failed", Error: err, Status: "error"})
-		return
-	}
-
-	values, err := yaml.Marshal(payload)
+	file := new(os.File)
+	err := InitDeploy(c, file)
 	if err != nil {
-		c.JSON(500, handler.Response{Message: "marshal values failed", Error: err, Status: "error"})
-		return
+		deployError := err.(Error)
+		c.JSON(deployError.GetStatusCode(), deployError.GetResponse())
 	}
-
-	file, err := ioutil.TempFile(os.TempDir(), "values-*.yaml")
-	if err != nil {
-		c.JSON(500, handler.Response{Message: "create values failed", Error: err, Status: "error"})
-		return
-	}
-	defer func() {
-		err := file.Close()
-		log.Error(err, "Close file failed")
-	}()
-
-	if _, err := file.Write(values); err != nil {
-		c.JSON(500, handler.Response{Message: "write values failed", Error: err, Status: "error"})
-		return
-	}
-
 	err = process.Execute(file.Name())
 	if err == nil {
 		c.JSON(200, handler.Response{Message: "processing...", Status: "succeed"})
@@ -69,4 +48,45 @@ func Deploy(c *gin.Context) {
 		return
 	}
 	c.JSON(deployError.GetStatusCode(), deployError.GetResponse())
+}
+
+func InitDeploy(c *gin.Context, file *os.File) error {
+	if err := c.BindJSON(payload); err != nil {
+		return &ErrorDeploy{Code: 500, Cause: err, Message: "unmarshal failed"}
+	}
+	values, err := yaml.Marshal(payload)
+	if err != nil {
+		return &ErrorDeploy{Code: 500, Cause: err, Message: "marshal values failed"}
+	}
+	file, err = ioutil.TempFile("", "values-*.yaml")
+	if err != nil {
+		return &ErrorDeploy{Code: 500, Cause: err, Message: "create values failed"}
+	}
+	defer func() {
+		err := file.Close()
+		logger.Error(err, "Close file failed")
+	}()
+	if _, err := file.Write(values); err != nil {
+		return &ErrorDeploy{Code: 500, Cause: err, Message: "write values failed"}
+	}
+	return nil
+}
+
+func (e *ErrorDeploy) Error() string {
+	if e.Cause == nil {
+		return e.Message
+	}
+	return e.Message + " : " + e.Cause.Error()
+}
+
+func (e *ErrorDeploy) GetStatusCode() int {
+	return e.Code
+}
+
+func (e *ErrorDeploy) GetResponse() handler.Response {
+	return handler.Response{
+		Status: "error",
+		Message: e.Message,
+		Error: e.Cause,
+	}
 }

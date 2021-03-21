@@ -24,7 +24,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/w6d-io/appdeploy/internal/config"
+	"github.com/w6d-io/app-deploy/internal/config"
 	"go.uber.org/zap/zapcore"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )

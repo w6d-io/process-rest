@@ -17,7 +17,7 @@ Created on 20/03/2021
 package deploy
 
 import (
-	"github.com/w6d-io/appdeploy/pkg/handler"
+	"github.com/w6d-io/app-deploy/pkg/handler"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -35,4 +35,10 @@ type Error interface {
 	GetResponse() handler.Response
 	// GetStatusCode returns http status code.
 	GetStatusCode() int
+}
+
+type ErrorDeploy struct {
+	Cause   error
+	Code    int
+	Message string
 }

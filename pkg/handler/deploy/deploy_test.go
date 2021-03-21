@@ -17,7 +17,7 @@ Created on 20/03/2021
 package deploy_test
 
 import (
-	"github.com/w6d-io/appdeploy/pkg/handler/deploy"
+	"github.com/w6d-io/app-deploy/pkg/handler/deploy"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"

@@ -17,7 +17,7 @@ Created on 20/03/2021
 package process
 
 import (
-	"github.com/w6d-io/appdeploy/pkg/handler"
+	"github.com/w6d-io/app-deploy/pkg/handler"
 )
 
 func (e *Error) Error() string {
