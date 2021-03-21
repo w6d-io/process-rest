@@ -1,4 +1,4 @@
-module github.com/w6d-io/app-deploy
+module github.com/w6d-io/process-rest
 
 go 1.16
 

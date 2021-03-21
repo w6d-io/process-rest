@@ -1,4 +1,4 @@
-IMG ?= w6dio/app-deploy:latest
+IMG ?= w6dio/process-rest:latest
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -15,21 +15,21 @@ BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 GOOS=$(shell uname -s | tr "[:upper:]" "[:lower:]")
 GOARCH=$(shell uname -p)
 
-all: app-deploy
+all: process-rest
 
 # Run tests
 test: fmt vet
 	go test -v -coverpkg=./... -coverprofile=cover.out ./...
 	@go tool cover -func cover.out | grep total
 
-# Build app-deploy binary
-app-deploy: fmt vet vendor
+# Build process-rest binary
+process-rest: fmt vet vendor
 	VERSION=${VERSION/refs\/heads\//}
-	go build -ldflags="-X 'main.Version=${VERSION}' -X 'main.Revision=${VCS_REF}' -X 'main.GoVersion=go${GOVERSION}' -X 'main.Built=${BUILD_DATE}' -X 'main.OsArch=${GOOS}/${GOARCH}'" -mod=vendor -a -o bin/app-deploy cmd/app-deploy/main.go
+	go build -ldflags="-X 'main.Version=${VERSION}' -X 'main.Revision=${VCS_REF}' -X 'main.GoVersion=go${GOVERSION}' -X 'main.Built=${BUILD_DATE}' -X 'main.OsArch=${GOOS}/${GOARCH}'" -mod=vendor -a -o bin/process-rest cmd/process-rest/main.go
 
 # Run against the configured Kubernetes cluster in ~/.kube/config
 run: fmt vet
-	go run cmd/app-deploy/main.go -config config/tests/config.yaml -log-level 2
+	go run cmd/process-rest/main.go -config config/tests/config.yaml -log-level 2
 
 # Run go fmt against code
 fmt:

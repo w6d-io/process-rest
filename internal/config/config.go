@@ -22,7 +22,7 @@ import (
 	"os"
 
 	"github.com/pkg/errors"
-	"github.com/w6d-io/app-deploy/internal/process"
+	"github.com/w6d-io/process-rest/internal/process"
 	"gopkg.in/yaml.v3"
 
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -45,14 +45,14 @@ func New(filename string) error {
 	if err := config.AddPreScript(); err != nil {
 		return err
 	}
-	if err := config.AddDeployScript(); err != nil {
+	if err := config.AddProcessScript(); err != nil {
 		return err
 	}
 	if err := config.AddPostScript(); err != nil {
 		return err
 	}
 	if !process.Validate() {
-		return errors.New("a deployment script should be set")
+		return errors.New("a process script should be set")
 	}
 	return nil
 }
@@ -97,22 +97,22 @@ func (c *Config) AddPreScript() error {
 	return nil
 }
 
-func (c *Config) AddDeployScript() error {
-	log := ctrl.Log.WithName("Config").WithName("AddDeployScript")
-	if c.DeployScriptFolder == "" {
+func (c *Config) AddProcessScript() error {
+	log := ctrl.Log.WithName("Config").WithName("AddMainScript")
+	if c.ProcessScriptFolder == "" {
 		return nil
 	}
-	files, err := ioutil.ReadDir(c.DeployScriptFolder)
+	files, err := ioutil.ReadDir(c.ProcessScriptFolder)
 	if err != nil {
-		log.Error(err, "get file in folder failed", "folder", c.DeployScriptFolder)
+		log.Error(err, "get file in folder failed", "folder", c.ProcessScriptFolder)
 		return err
 	}
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
-		path := fmt.Sprintf("%s%c%s", c.DeployScriptFolder, os.PathSeparator, file.Name())
-		process.AddDeployScript(path)
+		path := fmt.Sprintf("%s%c%s", c.ProcessScriptFolder, os.PathSeparator, file.Name())
+		process.AddMainScript(path)
 	}
 	return nil
 }

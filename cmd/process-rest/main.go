@@ -23,8 +23,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/w6d-io/app-deploy/internal/util"
-	"github.com/w6d-io/app-deploy/pkg/router"
+	"github.com/w6d-io/process-rest/internal/util"
+	"github.com/w6d-io/process-rest/pkg/router"
 	"go.uber.org/zap/zapcore"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
@@ -70,7 +70,7 @@ func main() {
 	opts.StacktraceLevel = zapcore.PanicLevel
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts), zap.RawZapOpts(zapraw.AddCaller())))
 
-	setupLog.Info("starting app-deploy", "Version", Version, "Built",
+	setupLog.Info("starting process-rest", "Version", Version, "Built",
 		Built, "Revision", Revision, "Arch", OsArch, "GoVersion", GoVersion)
 	if err := router.Run(); err != nil {
 		setupLog.Error(err, "run server")

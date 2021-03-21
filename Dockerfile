@@ -1,4 +1,4 @@
-# Build the app-deploy binary
+# Build the process-rest binary
 ARG GOVERSION=1.15.5
 FROM golang:$GOVERSION as builder
 ARG GOVERSION=1.15.5
@@ -23,7 +23,7 @@ COPY pkg/ pkg/
 RUN  go build    \
      -mod=vendor \
      -ldflags="-X 'main.Version=${VERSION}' -X 'main.Revision=${VCS_REF}' -X 'main.GoVersion=go${GOVERSION}' -X 'main.Built=${BUILD_DATE}' -X 'main.OsArch=${GOOS}/${GOARCH}'" \
-     -a -o app-deploy cmd/app-deploy/main.go
+     -a -o process-rest cmd/process-rest/main.go
 
 
 FROM w6dio/kubectl:v1.1.3
@@ -39,7 +39,7 @@ LABEL maintainer="${USER_NAME} <${USER_EMAIL}>" \
         io.w6d.ci.build-date=$BUILD_DATE \
         io.w6d.ci.version=$VERSION
 WORKDIR /
-COPY --from=builder /workspace/app-deploy /usr/local/bin/app-deploy
+COPY --from=builder /workspace/process-rest /usr/local/bin/process-rest
 
-ENTRYPOINT ["/usr/local/bin/app-deploy"]
+ENTRYPOINT ["/usr/local/bin/process-rest"]
 

@@ -17,7 +17,7 @@ Created on 20/03/2021
 package router_test
 
 import (
-	"github.com/w6d-io/app-deploy/pkg/router"
+	"github.com/w6d-io/process-rest/pkg/router"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

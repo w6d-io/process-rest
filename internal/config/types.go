@@ -17,9 +17,9 @@ Created on 20/03/2021
 package config
 
 type Config struct {
-	PostScriptFolder   string `json:"post_script_folder" yaml:"post_script_folder"`
-	PreScriptFolder    string `json:"pre_script_folder" yaml:"pre_script_folder"`
-	DeployScriptFolder string `json:"deploy_script_folder" yaml:"deploy_script_folder"`
+	PostScriptFolder    string `json:"post_script_folder" yaml:"post_script_folder"`
+	PreScriptFolder     string `json:"pre_script_folder" yaml:"pre_script_folder"`
+	ProcessScriptFolder string `json:"process_script_folder" yaml:"process_script_folder"`
 }
 
 var (

@@ -14,29 +14,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 Created on 20/03/2021
 */
-package deploy_test
+package process_test
 
 import (
-	"github.com/w6d-io/app-deploy/pkg/handler/deploy"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/w6d-io/process-rest/pkg/handler/process"
 	"k8s.io/apimachinery/pkg/util/framer"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Deploy", func() {
+var _ = Describe("Process", func() {
 	Context("", func() {
 		BeforeEach(func() {
 		})
 		AfterEach(func() {
 		})
-		It("", func() {
+		It("payload well consisted", func() {
 			payload := `
 {
   "global": { "label": "test-integration" },
@@ -49,7 +49,7 @@ var _ = Describe("Deploy", func() {
 			c.Request = &http.Request{
 				Body: framer.NewJSONFramedReader(r),
 			}
-			deploy.Deploy(c)
+			process.Process(c)
 			Expect(c.Writer.Status()).To(Equal(200))
 		})
 		It("return 500 due to malformed payload", func() {
@@ -64,8 +64,24 @@ var _ = Describe("Deploy", func() {
 			c.Request = &http.Request{
 				Body: framer.NewJSONFramedReader(r),
 			}
-			deploy.Deploy(c)
+			process.Process(c)
 			Expect(c.Writer.Status()).To(Equal(500))
+		})
+		It("", func() {
+			payload := `
+{
+  "global": { "label": "test-integration" },
+  "redis": { "enabled": true }
+}
+`
+			r := ioutil.NopCloser(strings.NewReader(payload))
+			w := httptest.NewRecorder()
+			c, _ := gin.CreateTestContext(w)
+			c.Request = &http.Request{
+				Body: framer.NewJSONFramedReader(r),
+			}
+			process.Process(c)
+			Expect(c.Writer.Status()).To(Equal(200))
 		})
 	})
 })

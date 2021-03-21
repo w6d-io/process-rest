@@ -1,19 +1,33 @@
-# App Deploy
+# Process REST
 
-The aim of this application is to deploy deploy any application by receiving config through handler.
-After received the config it could execute pre-deploy and post-deploy scripts defined on its own configuration.
-The deployment is handling by helm version 3
+The aim of this application is to trigger script by POST data.
+The data posted will be record in a file then the file path will be set as parameter for all scripts
 
-It built to run into kubernetes cluster
+There is 3 kinds of script
 
-## Point of view
+- Pre  Script
+- Main Script
+- Post Script
 
-### Application configuration
+The process will be installed on alpine 3.6 along with ([Dockerfile](https://github.com/w6d-io/kubectl/blob/main/Dockerfile))
 
-- It may contain post-deployment and pre-deployment script
-- It have to contain the chart to use for the deployment and the credential if needed
+- helm (v3)
+- kubectl (v1.20.2)
+- jq (1.5)
+- yq
+- bash (4.3.48)
+- python (3.6.8)
+- pip (21.0.1)
+- gettext (0.19.8.1)
+- git (2.13.7)
+- make
+- curl
+- gawk
 
-Configuration could set in [configmap](https://kubernetes.io/docs/concepts/configuration/configmap) or [secret](https://kubernetes.io/docs/concepts/configuration/secret)
+## Configuration
+
+The script has to be in folder within the container
+In [kubernetes](https://k8s.io) it can be done through [configmap](https://kubernetes.io/docs/concepts/configuration/configmap) or [secret](https://kubernetes.io/docs/concepts/configuration/secret)
 
 ## Examples
 

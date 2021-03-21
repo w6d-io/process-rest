@@ -10,10 +10,10 @@ You may obtain a copy of the License at
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is prohibited.
-Created on 20/03/2021
+Created on 21/03/2021
 */
 
-package config_test
+package health_test
 
 import (
 	"testing"
@@ -21,16 +21,15 @@ import (
 	"go.uber.org/zap/zapcore"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	zapraw "go.uber.org/zap"
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-func TestConfig(t *testing.T) {
+func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Config Suite")
+	RunSpecs(t, " Suite")
 }
 
 var _ = BeforeSuite(func(done Done) {
@@ -49,11 +48,10 @@ var _ = BeforeSuite(func(done Done) {
 		EncodeCaller:   zapcore.FullCallerEncoder,
 	}
 	opts := zap.Options{
-		Encoder:         zapcore.NewConsoleEncoder(encoder),
-		Development:     false,
-		StacktraceLevel: zapcore.PanicLevel,
+		Encoder:     zapcore.NewConsoleEncoder(encoder),
+		Development: true,
 	}
-	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts), zap.RawZapOpts(zapraw.AddCaller())))
+	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 	close(done)
 }, 60)
 

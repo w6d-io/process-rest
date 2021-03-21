@@ -10,10 +10,10 @@ You may obtain a copy of the License at
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is prohibited.
-Created on 20/03/2021
+Created on 21/03/2021
 */
 
-package config_test
+package process_test
 
 import (
 	"testing"
@@ -28,9 +28,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestConfig(t *testing.T) {
+func TestProcess(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Config Suite")
+	RunSpecs(t, "Process Suite")
 }
 
 var _ = BeforeSuite(func(done Done) {
@@ -50,7 +50,7 @@ var _ = BeforeSuite(func(done Done) {
 	}
 	opts := zap.Options{
 		Encoder:         zapcore.NewConsoleEncoder(encoder),
-		Development:     false,
+		Development:     true,
 		StacktraceLevel: zapcore.PanicLevel,
 	}
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts), zap.RawZapOpts(zapraw.AddCaller())))

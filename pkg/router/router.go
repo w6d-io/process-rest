@@ -35,6 +35,11 @@ func AddPost(relativePath string, handlers ...gin.HandlerFunc) {
 	engine.POST(relativePath, handlers...)
 }
 
+// AddGet binds a function/method to a relative path in POST http method
+func AddGet(relativePath string, handlers ...gin.HandlerFunc) {
+	engine.GET(relativePath, handlers...)
+}
+
 func SetListen(address string) {
 	server.Addr = address
 }

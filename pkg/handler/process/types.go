@@ -14,15 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 Created on 20/03/2021
 */
-package deploy
+package process
 
 import (
-	"github.com/w6d-io/app-deploy/pkg/handler"
+	"github.com/w6d-io/process-rest/pkg/handler"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 var (
-	logger  = ctrl.Log.WithName("Deploy")
+	logger  = ctrl.Log.WithName("Process")
 	payload = new(Payload)
 )
 
@@ -37,7 +37,7 @@ type Error interface {
 	GetStatusCode() int
 }
 
-type ErrorDeploy struct {
+type ErrorProcess struct {
 	Cause   error
 	Code    int
 	Message string
