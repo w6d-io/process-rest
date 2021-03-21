@@ -99,19 +99,19 @@ func (c *Config) AddPreScript() error {
 
 func (c *Config) AddProcessScript() error {
 	log := ctrl.Log.WithName("Config").WithName("AddMainScript")
-	if c.ProcessScriptFolder == "" {
+	if c.MainScriptFolder == "" {
 		return nil
 	}
-	files, err := ioutil.ReadDir(c.ProcessScriptFolder)
+	files, err := ioutil.ReadDir(c.MainScriptFolder)
 	if err != nil {
-		log.Error(err, "get file in folder failed", "folder", c.ProcessScriptFolder)
+		log.Error(err, "get file in folder failed", "folder", c.MainScriptFolder)
 		return err
 	}
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
-		path := fmt.Sprintf("%s%c%s", c.ProcessScriptFolder, os.PathSeparator, file.Name())
+		path := fmt.Sprintf("%s%c%s", c.MainScriptFolder, os.PathSeparator, file.Name())
 		process.AddMainScript(path)
 	}
 	return nil

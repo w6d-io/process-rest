@@ -90,7 +90,7 @@ var _ = Describe("Config", func() {
 			err = ioutil.WriteFile(filename, []byte(fileTest), 0644)
 			Expect(err).To(Succeed())
 			configFile := dir + string(os.PathSeparator) + "config.yaml"
-			data := fmt.Sprintf(configTestFile, "process_script_folder", dir)
+			data := fmt.Sprintf(configTestFile, "main_script_folder", dir)
 			err = ioutil.WriteFile(configFile, []byte(data), 0444)
 			Expect(err).To(Succeed())
 			err = config.New(configFile)
@@ -175,7 +175,7 @@ var _ = Describe("Config", func() {
 			err = ioutil.WriteFile(filename, []byte(fileTest), 0644)
 			Expect(err).To(Succeed())
 			c := &config.Config{
-				ProcessScriptFolder: dir,
+				MainScriptFolder: dir,
 			}
 			err = c.AddProcessScript()
 			Expect(err).To(Succeed())
@@ -185,7 +185,7 @@ var _ = Describe("Config", func() {
 		})
 		It("succeed for prescript", func() {
 			c := &config.Config{
-				ProcessScriptFolder: "/no_such_folder",
+				MainScriptFolder: "/no_such_folder",
 			}
 			err := c.AddProcessScript()
 			Expect(err).ToNot(Succeed())
