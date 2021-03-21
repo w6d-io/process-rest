@@ -1,5 +1,7 @@
 # Process REST
 
+[![codecov](https://codecov.io/gh/w6d-io/process-rest/branch/main/graph/badge.svg?token=PZDUENZE1U)](https://codecov.io/gh/w6d-io/process-rest)
+
 The aim of this application is to trigger script by POST data.
 The data posted will be record in a file then the file path will be set as parameter for all scripts
 
