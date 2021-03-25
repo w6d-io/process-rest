@@ -38,6 +38,11 @@ LABEL maintainer="${USER_NAME} <${USER_EMAIL}>" \
         io.w6d.ci.vcs-url=$PROJECT_URL   \
         io.w6d.ci.build-date=$BUILD_DATE \
         io.w6d.ci.version=$VERSION
+RUN curl -sSL https://git.io/get-mo -o mo && \
+    chmod +x mo && \
+    mv mo /usr/local/bin/ && \
+    apk update && apk add postgresql-client
+
 WORKDIR /
 COPY --from=builder /workspace/process-rest /usr/local/bin/process-rest
 
