@@ -26,7 +26,7 @@ RUN  go build    \
      -a -o process-rest cmd/process-rest/main.go
 
 
-FROM w6dio/kubectl:v1.1.3
+FROM w6dio/kubectl:latest
 ARG VCS_REF
 ARG BUILD_DATE
 ARG VERSION
@@ -41,7 +41,8 @@ LABEL maintainer="${USER_NAME} <${USER_EMAIL}>" \
 RUN curl -sSL https://git.io/get-mo -o mo && \
     chmod +x mo && \
     mv mo /usr/local/bin/ && \
-    apk update && apk add postgresql-client
+    apt update && apt install -y postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /
 COPY --from=builder /workspace/process-rest /usr/local/bin/process-rest
