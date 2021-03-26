@@ -18,7 +18,6 @@ package config_test
 import (
 	"fmt"
 	"github.com/w6d-io/process-rest/internal/config"
-	"github.com/w6d-io/process-rest/internal/process"
 	"io/ioutil"
 	"os"
 
@@ -32,6 +31,12 @@ echo "test"
 
 var configTestFile = `
 %s: %s
+`
+var configTestFileWithHook = `
+%s: %s
+hooks:
+  - url: %s
+    scope: "test"
 `
 
 var _ = Describe("Config", func() {
@@ -76,7 +81,7 @@ var _ = Describe("Config", func() {
 			err = config.New(configFile)
 			Expect(err).ToNot(Succeed())
 			Expect(err.Error()).To(Equal("a process script should be set"))
-			process.Reset()
+			config.Reset()
 			err = os.RemoveAll(dir)
 			Expect(err).To(Succeed())
 
@@ -95,10 +100,46 @@ var _ = Describe("Config", func() {
 			Expect(err).To(Succeed())
 			err = config.New(configFile)
 			Expect(err).To(Succeed())
-			process.Reset()
+			config.Reset()
 			err = os.RemoveAll(dir)
 			Expect(err).To(Succeed())
-
+		})
+		It("success with hook", func() {
+			dir, err := ioutil.TempDir("", "process_dir")
+			Expect(err).To(Succeed())
+			_, err = ioutil.TempDir(dir, "directory")
+			Expect(err).To(Succeed())
+			filename := dir + string(os.PathSeparator) + "script1.sh"
+			err = ioutil.WriteFile(filename, []byte(fileTest), 0644)
+			Expect(err).To(Succeed())
+			configFile := dir + string(os.PathSeparator) + "config.yaml"
+			data := fmt.Sprintf(configTestFileWithHook, "main_script_folder", dir, "http://localhost")
+			err = ioutil.WriteFile(configFile, []byte(data), 0444)
+			Expect(err).To(Succeed())
+			err = config.New(configFile)
+			Expect(err).To(Succeed())
+			config.Reset()
+			err = os.RemoveAll(dir)
+			Expect(err).To(Succeed())
+		})
+		It("failed on hook", func() {
+			dir, err := ioutil.TempDir("", "process_dir")
+			Expect(err).To(Succeed())
+			_, err = ioutil.TempDir(dir, "directory")
+			Expect(err).To(Succeed())
+			filename := dir + string(os.PathSeparator) + "script1.sh"
+			err = ioutil.WriteFile(filename, []byte(fileTest), 0644)
+			Expect(err).To(Succeed())
+			configFile := dir + string(os.PathSeparator) + "config.yaml"
+			data := fmt.Sprintf(configTestFileWithHook, "main_script_folder", dir, "http://{}")
+			err = ioutil.WriteFile(configFile, []byte(data), 0444)
+			Expect(err).To(Succeed())
+			err = config.New(configFile)
+			Expect(err).ToNot(Succeed())
+			Expect(err.Error()).To(ContainSubstring("in host name"))
+			config.Reset()
+			err = os.RemoveAll(dir)
+			Expect(err).To(Succeed())
 		})
 	})
 	Context("add script", func() {
@@ -119,7 +160,7 @@ var _ = Describe("Config", func() {
 			}
 			err = c.AddPostScript()
 			Expect(err).To(Succeed())
-			process.Reset()
+			config.Reset()
 			err = os.RemoveAll(dir)
 			Expect(err).To(Succeed())
 		})
@@ -149,7 +190,7 @@ var _ = Describe("Config", func() {
 			}
 			err = c.AddPreScript()
 			Expect(err).To(Succeed())
-			process.Reset()
+			config.Reset()
 			err = os.RemoveAll(dir)
 			Expect(err).To(Succeed())
 		})
@@ -179,7 +220,7 @@ var _ = Describe("Config", func() {
 			}
 			err = c.AddProcessScript()
 			Expect(err).To(Succeed())
-			process.Reset()
+			config.Reset()
 			err = os.RemoveAll(dir)
 			Expect(err).To(Succeed())
 		})
@@ -196,6 +237,18 @@ var _ = Describe("Config", func() {
 			err := c.AddProcessScript()
 			Expect(err).To(Succeed())
 		})
-
+		It("check add function with empty path", func() {
+			config.AddPreScript("")
+			config.AddMainScript("")
+			config.AddPostScript("")
+		})
+		It("", func() {
+			scripts := config.GetPreScript()
+			Expect(len(scripts)).To(Equal(0))
+			scripts = config.GetMainScript()
+			Expect(len(scripts)).To(Equal(0))
+			scripts = config.GetPostScript()
+			Expect(len(scripts)).To(Equal(0))
+		})
 	})
 })

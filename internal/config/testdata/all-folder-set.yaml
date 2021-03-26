@@ -2,3 +2,6 @@
 post_script_folder: ""
 pre_script_folder:  ""
 main_script_folder: ""
+hooks:
+  - url: http://localhost:8080
+    scope: ".*"

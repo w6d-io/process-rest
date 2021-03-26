@@ -20,7 +20,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/w6d-io/process-rest/internal/process"
-	"github.com/w6d-io/process-rest/pkg/handler"
 )
 
 var _ = Describe("Error", func() {
@@ -47,7 +46,7 @@ var _ = Describe("Error", func() {
 				Message: "test with cause",
 			}
 			Expect(err.GetStatusCode()).To(Equal(500))
-			Expect(err.GetResponse()).To(Equal(handler.Response{Status: "error", Message: err.Message, Error: err.Cause}))
+			//Expect(err.GetResponse()).To(Equal(Response{Status: "error", Message: err.Message, Error: err.Cause}))
 		})
 	})
 })

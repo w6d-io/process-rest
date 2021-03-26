@@ -16,12 +16,6 @@ Created on 20/03/2021
 */
 package process
 
-var (
-	preScript  []string
-	mainScript []string
-	postScript []string
-)
-
 type Output struct {
 	Status string `json:"status" yaml:"status"`
 	Log    string `json:"log"    yaml:"log"`
@@ -32,4 +26,10 @@ type Error struct {
 	Cause   error
 	Code    int
 	Message string
+}
+
+type Status struct {
+	ID      string `json:"id"`
+	Success bool   `json:"succes"`
+	Log     string `json:"log"`
 }

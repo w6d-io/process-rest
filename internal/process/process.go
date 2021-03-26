@@ -17,34 +17,14 @@ Created on 20/03/2021
 package process
 
 import (
+	"fmt"
+	"github.com/w6d-io/hook"
+	"github.com/w6d-io/process-rest/internal/config"
 	"os/exec"
+	"strings"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 )
-
-// AddPostScript appends the path to post script
-func AddPostScript(path string) {
-	if path == "" {
-		return
-	}
-	postScript = append(postScript, path)
-}
-
-// AddPreScript appends the path to pre script
-func AddPreScript(path string) {
-	if path == "" {
-		return
-	}
-	preScript = append(preScript, path)
-}
-
-// AddMainScript appends the path to pre script
-func AddMainScript(path string) {
-	if path == "" {
-		return
-	}
-	mainScript = append(mainScript, path)
-}
 
 func Run(name string, arg ...string) (string, error) {
 	log := ctrl.Log.WithName("Process")
@@ -82,54 +62,79 @@ func LoopProcess(scripts []string, outputs map[string]Output, arg ...string) err
 
 func PreProcess(outputs map[string]Output, arg ...string) error {
 	ctrl.Log.WithName("PreProcess").V(1).Info("loop process")
-	return LoopProcess(preScript, outputs, arg...)
+	return LoopProcess(config.GetPreScript(), outputs, arg...)
 }
 
 func PostProcess(outputs map[string]Output, arg ...string) error {
 	ctrl.Log.WithName("PostProcess").V(1).Info("loop process")
-	return LoopProcess(postScript, outputs, arg...)
+	return LoopProcess(config.GetPostScript(), outputs, arg...)
 }
 
 func MainProcess(outputs map[string]Output, arg ...string) error {
 	ctrl.Log.WithName("MainProcess").V(1).Info("loop process")
-	return LoopProcess(mainScript, outputs, arg...)
+	return LoopProcess(config.GetMainScript(), outputs, arg...)
 }
 
-func Execute(arg ...string) error {
+func Execute(id string, arg ...string) {
 	log := ctrl.Log.WithName("Execute")
 	outputs := make(map[string]Output)
+	errc := make(chan error)
+	go func() {
+		// do pre-process
+		if err := PreProcess(outputs, arg...); err != nil {
+			log.Error(err, "pre process failed")
+			Notify(id, outputs, "pre-process-failed", err)
+			errc <- NewError(err, 550, "pre process failed")
+			return
+		}
 
-	// do pre-process
-	if err := PreProcess(outputs, arg...); err != nil {
-		log.Error(err, "pre process failed")
-		return NewError(err, 550, "pre process failed")
+		// do main process
+		if err := MainProcess(outputs, arg...); err != nil {
+			log.Error(err, "main process failed")
+			Notify(id, outputs, "main-process-failed", err)
+			errc <- NewError(err, 551, "main process failed")
+			return
+		}
+
+		// do post-process
+		if err := PostProcess(outputs, arg...); err != nil {
+			log.Error(err, "post process failed")
+			Notify(id, outputs, "post-process-failed", err)
+			errc <- NewError(err, 552, "post process failed")
+			return
+		}
+		Notify(id, outputs, "process-succeeded", nil)
+		errc <- nil
+	}()
+
+	//for range []string{"1", "2"} {
+	if err := <-errc; err != nil {
+		log.Error(err, "process failed")
 	}
-
-	// do main process
-	if err := MainProcess(outputs, arg...); err != nil {
-		log.Error(err, "main process failed")
-		return NewError(err, 551, "main process failed")
-	}
-
-	// do post-process
-	if err := PostProcess(outputs, arg...); err != nil {
-		log.Error(err, "post process failed")
-		return NewError(err, 552, "post process failed")
-	}
-
-	return nil
+	//}
 }
 
-func Reset() {
-	preScript = []string{}
-	mainScript = []string{}
-	postScript = []string{}
+func Notify(id string, outputs map[string]Output, scope string, err error) {
+	log := ctrl.Log.WithName("Notify")
+
+	status := &Status{
+		Success: err == nil,
+		Log:     GetLogMessage(err, outputs),
+		ID:      id,
+	}
+	log.V(1).Info("send", "scope", scope)
+	_ = hook.Send(status, ctrl.Log, scope)
 }
 
-func Validate() bool {
-	log := ctrl.Log.WithName("Validate")
-	log.V(1).Info("contain", "pre_script", preScript,
-		"main_script", mainScript,
-		"post_script", postScript)
-	return len(mainScript) != 0
+func GetLogMessage(err error, outputs map[string]Output) string {
+	var messages []string
+	if err != nil {
+		messages = append(messages, fmt.Sprintf(`{"error": "%s"}`, err.Error()))
+	}
+	for key := range outputs {
+		message := fmt.Sprintf(`{"script":"%s", "error":"%s", "status":"%s", "log":"%s"}`,
+			key, outputs[key].Error, outputs[key].Status, outputs[key].Log)
+		messages = append(messages, message)
+	}
+	return fmt.Sprintf("{%s}", strings.Join(messages, ","))
 }

@@ -19,14 +19,15 @@ package process
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/w6d-io/process-rest/internal/process"
-	"github.com/w6d-io/process-rest/pkg/handler"
+	"github.com/w6d-io/process-rest/pkg/router"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
 
-// @Param {payload}
-// @Success 200 {object}
-// @Failure 500 {object} httputil.HTTPError
+func init() {
+	router.AddPost("/process", Process)
+}
+
 // Process handle POST on /process
 func Process(c *gin.Context) {
 	filename, err := InitProcess(c)
@@ -35,18 +36,9 @@ func Process(c *gin.Context) {
 		c.JSON(processError.GetStatusCode(), processError.GetResponse())
 		return
 	}
-
-	err = process.Execute(filename)
-	if err == nil {
-		c.JSON(200, handler.Response{Message: "processing...", Status: "succeed"})
-		return
-	}
-	processError, ok := err.(Error)
-	if !ok {
-		c.JSON(500, handler.Response{Message: "process failed", Error: err})
-		return
-	}
-	c.JSON(processError.GetStatusCode(), processError.GetResponse())
+	ID, _ := c.GetQuery("id")
+	go process.Execute(ID, filename)
+	c.JSON(200, Response{Message: "processing...", Status: "succeed"})
 }
 
 func InitProcess(c *gin.Context) (string, error) {
@@ -82,8 +74,8 @@ func (e *ErrorProcess) GetStatusCode() int {
 	return e.Code
 }
 
-func (e *ErrorProcess) GetResponse() handler.Response {
-	return handler.Response{
+func (e *ErrorProcess) GetResponse() Response {
+	return Response{
 		Status:  "error",
 		Message: e.Message,
 		Error:   e.Cause,

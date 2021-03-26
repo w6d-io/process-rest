@@ -14,9 +14,3 @@ Created on 20/03/2021
 */
 
 package handler
-
-type Response struct {
-	Status  string `json:"status"`
-	Message string `json:"message"`
-	Error   error  `json:"error,omitempty"`
-}
