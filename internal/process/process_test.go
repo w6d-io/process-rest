@@ -16,6 +16,8 @@ Created on 21/03/2021
 package process_test
 
 import (
+	"errors"
+	"github.com/w6d-io/hook"
 	"github.com/w6d-io/process-rest/internal/config"
 	"io/ioutil"
 	"os"
@@ -71,7 +73,7 @@ var _ = Describe("Process", func() {
 			config.AddPostScript("")
 			Expect(config.Validate()).To(Equal(false))
 			process.Execute("")
-			//Expect(err).To(Succeed())
+
 		})
 		It("runs pre script with success", func() {
 			config.AddPreScript(filename)
@@ -79,9 +81,12 @@ var _ = Describe("Process", func() {
 			//Expect(err).To(Succeed())
 		})
 		It("runs main script with success", func() {
+			err := hook.Subscribe("http://localhost:8888", ".*")
+			Expect(err).To(Succeed())
 			config.AddMainScript(filename)
-			process.Execute("")
-			//Expect(err).To(Succeed())
+			outputs := make(map[string]process.Output)
+			err = process.MainProcess(outputs)
+			Expect(err).To(Succeed())
 		})
 		It("runs post script with success", func() {
 			config.AddPostScript(filename)
@@ -106,6 +111,19 @@ var _ = Describe("Process", func() {
 			//Expect(err).ToNot(Succeed())
 			//Expect(err.Error()).To(ContainSubstring("post process failed"))
 		})
-
+	})
+	Context("get message", func() {
+		It("returns message with output", func() {
+			err := errors.New("test")
+			outputs := map[string]process.Output{
+				"test.sh": process.Output{
+					Status: "failed",
+					Log:    "no such test",
+					Error:  "not found",
+				},
+			}
+			s := process.GetLogMessage(err, outputs)
+			Expect(s).To(Equal(`{{"error": "test"},{"script":"test.sh", "error":"not found", "status":"failed", "log":"no such test"}}`))
+		})
 	})
 })

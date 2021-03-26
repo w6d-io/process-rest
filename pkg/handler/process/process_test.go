@@ -17,9 +17,11 @@ Created on 20/03/2021
 package process_test
 
 import (
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -46,8 +48,11 @@ var _ = Describe("Process", func() {
 			r := ioutil.NopCloser(strings.NewReader(payload))
 			w := httptest.NewRecorder()
 			c, _ := gin.CreateTestContext(w)
+			URL, err := url.Parse("http://localhost:8888/process?id=a9bac696-f21e-4149-9018-cf882e5bf8e7")
+			Expect(err).To(Succeed())
 			c.Request = &http.Request{
 				Body: framer.NewJSONFramedReader(r),
+				URL:  URL,
 			}
 			process.Process(c)
 			Expect(c.Writer.Status()).To(Equal(200))
@@ -61,8 +66,11 @@ var _ = Describe("Process", func() {
 			r := ioutil.NopCloser(strings.NewReader(payload))
 			w := httptest.NewRecorder()
 			c, _ := gin.CreateTestContext(w)
+			URL, err := url.Parse("http://localhost:8888/process?id=a9bac696-f21e-4149-9018-cf882e5bf8e7")
+			Expect(err).To(Succeed())
 			c.Request = &http.Request{
 				Body: framer.NewJSONFramedReader(r),
+				URL:  URL,
 			}
 			process.Process(c)
 			Expect(c.Writer.Status()).To(Equal(500))
@@ -77,11 +85,24 @@ var _ = Describe("Process", func() {
 			r := ioutil.NopCloser(strings.NewReader(payload))
 			w := httptest.NewRecorder()
 			c, _ := gin.CreateTestContext(w)
+			URL, err := url.Parse("http://localhost:8888/process?id=a9bac696-f21e-4149-9018-cf882e5bf8e7")
+			Expect(err).To(Succeed())
 			c.Request = &http.Request{
 				Body: framer.NewJSONFramedReader(r),
+				URL:  URL,
 			}
 			process.Process(c)
 			Expect(c.Writer.Status()).To(Equal(200))
+		})
+		It("get error Message", func() {
+			e := process.ErrorProcess{
+				Cause:   errors.New("test"),
+				Code:    500,
+				Message: "Test",
+			}
+			Expect(e.Error()).To(Equal("Test : test"))
+			e.Cause = nil
+			Expect(e.Error()).To(Equal("Test"))
 		})
 	})
 })

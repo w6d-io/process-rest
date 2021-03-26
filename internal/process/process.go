@@ -78,7 +78,7 @@ func MainProcess(outputs map[string]Output, arg ...string) error {
 func Execute(id string, arg ...string) {
 	log := ctrl.Log.WithName("Execute")
 	outputs := make(map[string]Output)
-	errc := make(chan error, 2)
+	errc := make(chan error)
 	go func() {
 		// do pre-process
 		if err := PreProcess(outputs, arg...); err != nil {
@@ -104,28 +104,26 @@ func Execute(id string, arg ...string) {
 			return
 		}
 		Notify(id, outputs, "process-succeeded", nil)
-
+		errc <- nil
 	}()
 
-	for range []string{"1", "2"} {
-		if err := <-errc; err != nil {
-			log.Error(err, "process failed")
-		}
+	//for range []string{"1", "2"} {
+	if err := <-errc; err != nil {
+		log.Error(err, "process failed")
 	}
+	//}
 }
 
 func Notify(id string, outputs map[string]Output, scope string, err error) {
 	log := ctrl.Log.WithName("Notify")
 
 	status := &Status{
-		Succes: err != nil,
-		Log:    GetLogMessage(err, outputs),
-		ID:     id,
+		Success: err == nil,
+		Log:     GetLogMessage(err, outputs),
+		ID:      id,
 	}
-	if err := hook.Send(status, ctrl.Log, scope); err != nil {
-		log.Error(err, "notification failed")
-	}
-
+	log.V(1).Info("send", "scope", scope)
+	_ = hook.Send(status, ctrl.Log, scope)
 }
 
 func GetLogMessage(err error, outputs map[string]Output) string {
