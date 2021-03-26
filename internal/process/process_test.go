@@ -34,6 +34,7 @@ var (
 	//`
 	successTest = `#!/bin/bash
 echo "test"
+echo "toto"
 exit 0
 `
 	failTest = `#!/bin/bash
@@ -84,8 +85,8 @@ var _ = Describe("Process", func() {
 			err := hook.Subscribe("http://localhost:8888", ".*")
 			Expect(err).To(Succeed())
 			config.AddMainScript(filename)
-			outputs := make(map[string]process.Output)
-			err = process.MainProcess(outputs)
+			p := new(process.Process)
+			err = p.MainProcess()
 			Expect(err).To(Succeed())
 		})
 		It("runs post script with success", func() {
@@ -115,14 +116,16 @@ var _ = Describe("Process", func() {
 	Context("get message", func() {
 		It("returns message with output", func() {
 			err := errors.New("test")
-			outputs := map[string]process.Output{
-				"test.sh": process.Output{
-					Status: "failed",
-					Log:    "no such test",
-					Error:  "not found",
-				},
+			output := process.Output{
+				Name:   "test.sh",
+				Status: "failed",
+				Log:    "no such test",
+				Error:  "not found",
 			}
-			s := process.GetLogMessage(err, outputs)
+			p := &process.Process{
+				Outputs: []process.Output{output},
+			}
+			s := p.GetLogMessage(err)
 			Expect(s).To(Equal(`{{"error": "test"},{"script":"test.sh", "error":"not found", "status":"failed", "log":"no such test"}}`))
 		})
 	})
