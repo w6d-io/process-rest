@@ -118,9 +118,9 @@ func Notify(id string, outputs map[string]Output, scope string, err error) {
 	log := ctrl.Log.WithName("Notify")
 
 	status := &Status{
-		SuccesDeploiement: err != nil,
-		LogMessage:        GetLogMessage(err, outputs),
-		TenantID:          id,
+		Succes: err != nil,
+		Log:    GetLogMessage(err, outputs),
+		ID:     id,
 	}
 	if err := hook.Send(status, ctrl.Log, scope); err != nil {
 		log.Error(err, "notification failed")

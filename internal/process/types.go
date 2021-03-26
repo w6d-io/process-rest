@@ -29,7 +29,7 @@ type Error struct {
 }
 
 type Status struct {
-	TenantID          string `json:"tenantId"`
-	SuccesDeploiement bool   `json:"succesDeploiement"`
-	LogMessage        string `json:"logMessage"`
+	ID      string `json:"id"`
+	Success bool   `json:"succes"`
+	Log     string `json:"log"`
 }
