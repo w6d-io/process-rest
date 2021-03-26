@@ -16,12 +16,21 @@ Created on 20/03/2021
 */
 package config
 
+type Hook struct {
+	URL   string `json:"url"  yaml:"url"`
+	Scope string `json:"scope" yaml:"scope"`
+}
+
 type Config struct {
 	PreScriptFolder  string `json:"pre_script_folder" yaml:"pre_script_folder"`
 	MainScriptFolder string `json:"main_script_folder" yaml:"main_script_folder"`
 	PostScriptFolder string `json:"post_script_folder" yaml:"post_script_folder"`
+	Hooks            []Hook `json:"hooks" yaml:"hooks"`
 }
 
 var (
-	config = new(Config)
+	config     = new(Config)
+	preScript  []string
+	mainScript []string
+	postScript []string
 )

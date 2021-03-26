@@ -24,6 +24,7 @@ import (
 	"os"
 
 	"github.com/w6d-io/process-rest/internal/util"
+	"github.com/w6d-io/process-rest/pkg/handler"
 	"github.com/w6d-io/process-rest/pkg/router"
 	"go.uber.org/zap/zapcore"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
@@ -49,6 +50,8 @@ var (
 
 	// OsArch ...
 	OsArch = ""
+
+	_ = handler.Handler{}
 )
 
 func main() {

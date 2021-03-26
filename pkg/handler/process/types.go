@@ -17,7 +17,6 @@ Created on 20/03/2021
 package process
 
 import (
-	"github.com/w6d-io/process-rest/pkg/handler"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -32,7 +31,7 @@ type Payload map[string]interface{}
 type Error interface {
 	Error() string
 	// GetResponse returns the Response struct
-	GetResponse() handler.Response
+	GetResponse() Response
 	// GetStatusCode returns http status code.
 	GetStatusCode() int
 }
@@ -41,4 +40,10 @@ type ErrorProcess struct {
 	Cause   error
 	Code    int
 	Message string
+}
+
+type Response struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+	Error   error  `json:"error,omitempty"`
 }

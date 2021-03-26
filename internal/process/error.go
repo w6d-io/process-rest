@@ -16,10 +16,6 @@ Created on 20/03/2021
 */
 package process
 
-import (
-	"github.com/w6d-io/process-rest/pkg/handler"
-)
-
 func (e *Error) Error() string {
 	if e.Cause == nil {
 		return e.Message
@@ -31,13 +27,13 @@ func (e *Error) GetStatusCode() int {
 	return e.Code
 }
 
-func (e *Error) GetResponse() handler.Response {
-	return handler.Response{
-		Status:  "error",
-		Message: e.Message,
-		Error:   e.Cause,
-	}
-}
+//func (e *Error) GetResponse() Response {
+//	return Response{
+//		Status:  "error",
+//		Message: e.Message,
+//		Error:   e.Cause,
+//	}
+//}
 
 func NewError(cause error, code int, message string) error {
 	return &Error{

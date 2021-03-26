@@ -17,12 +17,12 @@ Created on 20/03/2021
 package config
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 
-	"github.com/pkg/errors"
-	"github.com/w6d-io/process-rest/internal/process"
+	"github.com/w6d-io/hook"
 	"gopkg.in/yaml.v3"
 
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -51,8 +51,14 @@ func New(filename string) error {
 	if err := config.AddPostScript(); err != nil {
 		return err
 	}
-	if !process.Validate() {
+	if !Validate() {
 		return errors.New("a process script should be set")
+	}
+	for _, wh := range config.Hooks {
+		if err := hook.Subscribe(wh.URL, wh.Scope); err != nil {
+			log.Error(err, "hook subscription failed")
+			return err
+		}
 	}
 	return nil
 }
@@ -72,7 +78,7 @@ func (c *Config) AddPostScript() error {
 			continue
 		}
 		path := fmt.Sprintf("%s%c%s", c.PostScriptFolder, os.PathSeparator, file.Name())
-		process.AddPostScript(path)
+		AddPostScript(path)
 	}
 	return nil
 }
@@ -92,7 +98,7 @@ func (c *Config) AddPreScript() error {
 			continue
 		}
 		path := fmt.Sprintf("%s%c%s", c.PreScriptFolder, os.PathSeparator, file.Name())
-		process.AddPreScript(path)
+		AddPreScript(path)
 	}
 	return nil
 }
@@ -112,7 +118,57 @@ func (c *Config) AddProcessScript() error {
 			continue
 		}
 		path := fmt.Sprintf("%s%c%s", c.MainScriptFolder, os.PathSeparator, file.Name())
-		process.AddMainScript(path)
+		AddMainScript(path)
 	}
 	return nil
+}
+
+// AddPostScript appends the path to post script
+func AddPostScript(path string) {
+	if path == "" {
+		return
+	}
+	postScript = append(postScript, path)
+}
+
+// AddPreScript appends the path to pre script
+func AddPreScript(path string) {
+	if path == "" {
+		return
+	}
+	preScript = append(preScript, path)
+}
+
+// AddMainScript appends the path to pre script
+func AddMainScript(path string) {
+	if path == "" {
+		return
+	}
+	mainScript = append(mainScript, path)
+}
+
+func Reset() {
+	preScript = []string{}
+	mainScript = []string{}
+	postScript = []string{}
+}
+
+func Validate() bool {
+	log := ctrl.Log.WithName("Validate")
+	log.V(1).Info("contain", "pre_script", preScript,
+		"main_script", mainScript,
+		"post_script", postScript)
+	return len(mainScript) != 0
+}
+
+func GetPreScript() []string {
+	return preScript
+}
+
+func GetMainScript() []string {
+	return mainScript
+}
+
+func GetPostScript() []string {
+	return postScript
 }

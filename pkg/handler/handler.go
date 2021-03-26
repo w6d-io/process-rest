@@ -15,10 +15,14 @@ Created on 21/03/2021
 
 package handler
 
-import "github.com/w6d-io/process-rest/pkg/handler/health"
+import (
+	"github.com/w6d-io/process-rest/pkg/handler/health"
+	"github.com/w6d-io/process-rest/pkg/handler/process"
+)
 
 func init() {
 	_ = health.Healthy{}
+	_ = process.Payload{}
 }
 
 type Handler struct{}

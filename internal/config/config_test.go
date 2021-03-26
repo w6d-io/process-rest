@@ -18,7 +18,6 @@ package config_test
 import (
 	"fmt"
 	"github.com/w6d-io/process-rest/internal/config"
-	"github.com/w6d-io/process-rest/internal/process"
 	"io/ioutil"
 	"os"
 
@@ -76,7 +75,7 @@ var _ = Describe("Config", func() {
 			err = config.New(configFile)
 			Expect(err).ToNot(Succeed())
 			Expect(err.Error()).To(Equal("a process script should be set"))
-			process.Reset()
+			config.Reset()
 			err = os.RemoveAll(dir)
 			Expect(err).To(Succeed())
 
@@ -95,7 +94,7 @@ var _ = Describe("Config", func() {
 			Expect(err).To(Succeed())
 			err = config.New(configFile)
 			Expect(err).To(Succeed())
-			process.Reset()
+			config.Reset()
 			err = os.RemoveAll(dir)
 			Expect(err).To(Succeed())
 
@@ -119,7 +118,7 @@ var _ = Describe("Config", func() {
 			}
 			err = c.AddPostScript()
 			Expect(err).To(Succeed())
-			process.Reset()
+			config.Reset()
 			err = os.RemoveAll(dir)
 			Expect(err).To(Succeed())
 		})
@@ -149,7 +148,7 @@ var _ = Describe("Config", func() {
 			}
 			err = c.AddPreScript()
 			Expect(err).To(Succeed())
-			process.Reset()
+			config.Reset()
 			err = os.RemoveAll(dir)
 			Expect(err).To(Succeed())
 		})
@@ -179,7 +178,7 @@ var _ = Describe("Config", func() {
 			}
 			err = c.AddProcessScript()
 			Expect(err).To(Succeed())
-			process.Reset()
+			config.Reset()
 			err = os.RemoveAll(dir)
 			Expect(err).To(Succeed())
 		})
