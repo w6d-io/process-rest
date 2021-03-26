@@ -17,6 +17,7 @@ Created on 20/03/2021
 package process
 
 type Output struct {
+	Name   string `json:"name"   yaml:"name"`
 	Status string `json:"status" yaml:"status"`
 	Log    string `json:"log"    yaml:"log"`
 	Error  string `json:"error"  yaml:"error"`
@@ -30,6 +31,10 @@ type Error struct {
 
 type Status struct {
 	ID      string `json:"id"`
-	Success bool   `json:"succes"`
+	Success bool   `json:"success"`
 	Log     string `json:"log"`
+}
+
+type Process struct {
+	Outputs []Output `json:"outputs"`
 }
