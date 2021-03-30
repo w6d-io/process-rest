@@ -52,7 +52,7 @@ jobs:
         with:
           push: true
           build-args: |
-            VERSION=${{ steps.build_var.outputs.SOURCE_TAG }}
+            VERSION=${{ steps.tag_and_prepare_release.outputs.tag }}
             VCS_REF=${{ steps.build_var.outputs.VCS_REF }}
             BUILD_DATE=${{ steps.build_var.outputs.BUILD_DATE }}
             PROJECT_URL=${{ steps.build_var.outputs.PROJECT_URL }}
