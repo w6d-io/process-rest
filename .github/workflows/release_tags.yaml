@@ -7,7 +7,6 @@ on:
   create:
     tags:
       - v*
-
 jobs:
   release:
     runs-on: ubuntu-latest
