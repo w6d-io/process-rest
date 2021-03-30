@@ -42,25 +42,32 @@ func Process(c *gin.Context) {
 }
 
 func InitProcess(c *gin.Context) (string, error) {
+	logger = logger.WithValues("correlation_id", GetCorrelationID(c))
 	if err := c.BindJSON(payload); err != nil {
+		logger.Error(err, "unmarshal failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "unmarshal failed"}
 	}
 	values, err := yaml.Marshal(payload)
 	if err != nil {
-		return "", &ErrorProcess{Code: 500, Cause: err, Message: "marshal values failed"}
+		logger.Error(err, "marshal payload failed")
+		return "", &ErrorProcess{Code: 500, Cause: err, Message: "marshal payload failed"}
 	}
 	file, err := ioutil.TempFile("", "values-*.yaml")
 	if err != nil {
-		return "", &ErrorProcess{Code: 500, Cause: err, Message: "create values failed"}
+		logger.Error(err, "create payload failed")
+		return "", &ErrorProcess{Code: 500, Cause: err, Message: "create payload failed"}
 	}
-	defer func() {
-		err := file.Close()
-		logger.Error(err, "Close file failed")
-	}()
 	if _, err := file.Write(values); err != nil {
-		return "", &ErrorProcess{Code: 500, Cause: err, Message: "write values failed"}
+		logger.Error(err, "write payload failed")
+		return "", &ErrorProcess{Code: 500, Cause: err, Message: "write payload failed"}
 	}
-	return file.Name(), nil
+	filename := file.Name()
+	err = file.Close()
+	if err != nil {
+		logger.Error(err, "create payload failed")
+		return "", &ErrorProcess{Code: 500, Cause: err, Message: "create payload failed"}
+	}
+	return filename, nil
 }
 
 func (e *ErrorProcess) Error() string {
@@ -80,4 +87,14 @@ func (e *ErrorProcess) GetResponse() Response {
 		Message: e.Message,
 		Error:   e.Cause,
 	}
+}
+
+func GetCorrelationID(ctx *gin.Context) string {
+	if ctx != nil && ctx.Writer != nil {
+		h := ctx.Writer.Header()
+		if h != nil {
+			return h.Get("correlation_id")
+		}
+	}
+	return ""
 }

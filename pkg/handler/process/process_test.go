@@ -104,5 +104,9 @@ var _ = Describe("Process", func() {
 			e.Cause = nil
 			Expect(e.Error()).To(Equal("Test"))
 		})
+		It("", func() {
+			cid := process.GetCorrelationID(nil)
+			Expect(cid).To(Equal(""))
+		})
 	})
 })
