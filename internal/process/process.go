@@ -46,8 +46,9 @@ func (p *Process) LoopProcess(scripts []string, arg ...string) error {
 	log := ctrl.Log.WithName("LoopProcess")
 	for _, script := range scripts {
 		log.Info("run", "script", script)
-		arg = append([]string{"-c", script}, arg...)
-		output, err := Run("bash", arg...)
+		arg = append([]string{script}, arg...)
+		args := strings.Join(arg, " ")
+		output, err := Run("bash", "-c", args)
 		o := Output{
 			Name:   path.Base(script),
 			Status: "succeeded",
