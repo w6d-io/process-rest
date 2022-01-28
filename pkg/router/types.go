@@ -18,7 +18,6 @@ package router
 
 import (
 	"net/http"
-	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,7 +27,6 @@ var (
 		Addr: ":8080",
 	}
 	engine = gin.New()
-	logger = ctrl.Log.WithName("Router")
 )
 
 const CorrelationId string = "correlation_id"

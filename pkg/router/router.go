@@ -22,6 +22,8 @@ import (
 	"os/signal"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/w6d-io/x/logx"
 )
 
 func init() {
@@ -45,6 +47,9 @@ func SetListen(address string) {
 }
 
 func Run() error {
+
+	log := logx.WithName(nil, "Router.Run")
+
 	server.Handler = engine
 
 	quit := make(chan os.Signal)
@@ -52,19 +57,19 @@ func Run() error {
 	signal.Notify(quit, os.Kill)
 	go func() {
 		<-quit
-		logger.Info("receive interrupt or kill signal")
+		log.Info("receive interrupt or kill signal")
 		if err := server.Close(); err != nil {
-			logger.Error(err, "Server closed")
+			log.Error(err, "Server closed")
 			os.Exit(1)
 		}
 	}()
-	logger.WithValues("address", server.Addr).Info("Listening and serving HTTP")
+	log.WithValues("address", server.Addr).Info("Listening and serving HTTP")
 	if err := server.ListenAndServe(); err != nil {
 		if err == http.ErrServerClosed {
-			logger.Info("Server closed under request")
+			log.Info("Server closed under request")
 			return nil
 		}
-		logger.Error(err, "Server closed unexpect")
+		log.Error(err, "Server closed unexpect")
 		return err
 	}
 	return nil

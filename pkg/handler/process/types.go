@@ -16,12 +16,7 @@ Created on 20/03/2021
 */
 package process
 
-import (
-	ctrl "sigs.k8s.io/controller-runtime"
-)
-
 var (
-	logger  = ctrl.Log.WithName("Process")
 	payload = new(Payload)
 )
 

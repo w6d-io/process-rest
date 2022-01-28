@@ -18,64 +18,34 @@ Created on 20/03/2021
 package main
 
 import (
-	"errors"
-	"flag"
-	"fmt"
 	"os"
 
-	"github.com/w6d-io/process-rest/internal/util"
-	"github.com/w6d-io/process-rest/pkg/handler"
-	"github.com/w6d-io/process-rest/pkg/router"
-	"go.uber.org/zap/zapcore"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"github.com/ory/x/cmdx"
+	"github.com/spf13/cobra"
 
-	zapraw "go.uber.org/zap"
-	ctrl "sigs.k8s.io/controller-runtime"
+	"github.com/w6d-io/process-rest/cmd/process-rest/serve"
+	"github.com/w6d-io/process-rest/internal/config"
+	"github.com/w6d-io/x/logx"
 )
 
-var (
-	setupLog = ctrl.Log.WithName("setup")
-
-	// Version microservice version
-	Version = ""
-
-	// Revision git commit
-	Revision = ""
-
-	// GoVersion ...
-	GoVersion = ""
-
-	// Built Date built
-	Built = ""
-
-	// OsArch ...
-	OsArch = ""
-
-	_ = handler.Handler{}
-)
+var rootCmd = &cobra.Command{
+	Use: "project",
+	Run: func(cmd *cobra.Command, args []string) {
+		log := logx.WithName(nil, "Main.Command")
+		err := cmd.Help()
+		if err != nil {
+			log.Error(err, "cannot show help")
+		}
+	},
+}
 
 func main() {
-	setupLog.Info("managed flag")
-	opts := zap.Options{
-		Encoder: zapcore.NewConsoleEncoder(util.TextEncoderConfig()),
-	}
-	util.BindFlags(&opts, flag.CommandLine)
-	flag.Parse()
-	seen := make(map[string]bool)
-	flag.Visit(func(f *flag.Flag) { seen[f.Name] = true })
-	if !seen["config"] {
-		fmt.Print("config file is missing\n")
-		setupLog.Error(errors.New("flag error"), "config file is missing")
+	log := logx.WithName(nil, "Main.Command")
+
+	rootCmd.AddCommand(cmdx.Version(&config.Version, &config.Revision, &config.Built))
+	rootCmd.AddCommand(serve.Cmd)
+	if err := rootCmd.Execute(); err != nil {
+		log.Error(err, "exec command failed")
 		os.Exit(1)
-	}
-
-	opts.Development = os.Getenv("RELEASE") != "prod"
-	opts.StacktraceLevel = zapcore.PanicLevel
-	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts), zap.RawZapOpts(zapraw.AddCaller(), zapraw.AddCallerSkip(-1))))
-
-	setupLog.Info("starting process-rest", "Version", Version, "Built",
-		Built, "Revision", Revision, "Arch", OsArch, "GoVersion", GoVersion)
-	if err := router.Run(); err != nil {
-		setupLog.Error(err, "run server")
 	}
 }

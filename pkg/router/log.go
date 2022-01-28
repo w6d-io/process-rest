@@ -25,13 +25,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	ctrl "sigs.k8s.io/controller-runtime"
+	"github.com/w6d-io/x/logx"
 )
 
 // LogMiddleware logs a gin HTTP request in JSON format, with some additional custom key/values
 func LogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log := ctrl.Log.WithName("gin")
+		log := logx.WithName(nil, "Gin")
 		// Start timer
 		start := time.Now()
 

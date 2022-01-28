@@ -18,10 +18,14 @@ package process
 
 import (
 	"github.com/gin-gonic/gin"
+
+	"github.com/w6d-io/x/logx"
+
+	"io/ioutil"
+
 	"github.com/w6d-io/process-rest/internal/process"
 	"github.com/w6d-io/process-rest/pkg/router"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 )
 
 func init() {
@@ -42,29 +46,30 @@ func Process(c *gin.Context) {
 }
 
 func InitProcess(c *gin.Context) (string, error) {
-	logger = logger.WithValues("correlation_id", GetCorrelationID(c))
+	log := logx.WithName(nil, "Process.InitProcess").WithValues("correlation_id", GetCorrelationID(c))
+
 	if err := c.BindJSON(payload); err != nil {
-		logger.Error(err, "unmarshal failed")
+		log.Error(err, "unmarshal failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "unmarshal failed"}
 	}
 	values, err := yaml.Marshal(payload)
 	if err != nil {
-		logger.Error(err, "marshal payload failed")
+		log.Error(err, "marshal payload failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "marshal payload failed"}
 	}
 	file, err := ioutil.TempFile("", "values-*.yaml")
 	if err != nil {
-		logger.Error(err, "create payload failed")
+		log.Error(err, "create payload failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "create payload failed"}
 	}
 	if _, err := file.Write(values); err != nil {
-		logger.Error(err, "write payload failed")
+		log.Error(err, "write payload failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "write payload failed"}
 	}
 	filename := file.Name()
 	err = file.Close()
 	if err != nil {
-		logger.Error(err, "create payload failed")
+		log.Error(err, "create payload failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "create payload failed"}
 	}
 	return filename, nil
