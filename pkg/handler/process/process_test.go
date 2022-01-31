@@ -18,10 +18,12 @@ package process_test
 
 import (
 	"errors"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -35,6 +37,8 @@ import (
 var _ = Describe("Process", func() {
 	Context("", func() {
 		BeforeEach(func() {
+			process.YamlMarshal = yaml.Marshal
+			process.IoTempFile = ioutil.TempFile
 		})
 		AfterEach(func() {
 		})
@@ -56,6 +60,50 @@ var _ = Describe("Process", func() {
 			}
 			process.Process(c)
 			Expect(c.Writer.Status()).To(Equal(200))
+		})
+		It("payload well consisted, force yaml error", func() {
+			payload := `
+{
+  "global": { "label": "test-integration" },
+  "redis": { "enabled": true }
+}
+`
+			r := ioutil.NopCloser(strings.NewReader(payload))
+			w := httptest.NewRecorder()
+			c, _ := gin.CreateTestContext(w)
+			URL, err := url.Parse("http://localhost:8888/process?id=a9bac696-f21e-4149-9018-cf882e5bf8e7")
+			Expect(err).To(Succeed())
+			c.Request = &http.Request{
+				Body: framer.NewJSONFramedReader(r),
+				URL:  URL,
+			}
+			process.YamlMarshal = func(in interface{}) (out []byte, err error) {
+				return nil, errors.New("yaml marshal error")
+			}
+			process.Process(c)
+			Expect(c.Writer.Status()).To(Equal(500))
+		})
+		It("payload well consisted, force iotemp creation error", func() {
+			payload := `
+{
+  "global": { "label": "test-integration" },
+  "redis": { "enabled": true }
+}
+`
+			r := ioutil.NopCloser(strings.NewReader(payload))
+			w := httptest.NewRecorder()
+			c, _ := gin.CreateTestContext(w)
+			URL, err := url.Parse("http://localhost:8888/process?id=a9bac696-f21e-4149-9018-cf882e5bf8e7")
+			Expect(err).To(Succeed())
+			c.Request = &http.Request{
+				Body: framer.NewJSONFramedReader(r),
+				URL:  URL,
+			}
+			process.IoTempFile = func(dir, pattern string) (f *os.File, err error) {
+				return nil, errors.New("io temp error")
+			}
+			process.Process(c)
+			Expect(c.Writer.Status()).To(Equal(500))
 		})
 		It("return 500 due to malformed payload", func() {
 			payload := `
