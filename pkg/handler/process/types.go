@@ -21,8 +21,7 @@ import (
 )
 
 var (
-	logger  = ctrl.Log.WithName("Process")
-	payload = new(Payload)
+	logger = ctrl.Log.WithName("Process")
 )
 
 // payload is the values from request
