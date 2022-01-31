@@ -154,6 +154,7 @@ var _ = Describe("Config", func() {
 				data := fmt.Sprintf(configTestFileWithHook, "main_script_folder", dir, "http://{}")
 				err = ioutil.WriteFile(configFile, []byte(data), 0444)
 				Expect(err).To(Succeed())
+				config.CfgFile = configFile
 				config.Init()
 				Expect(configExitCode).To(Equal(2))
 				config.Reset()
