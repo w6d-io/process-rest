@@ -17,6 +17,7 @@ Created on 20/03/2021
 package config
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -83,7 +84,7 @@ func Init() {
 		return
 	}
 	for _, wh := range config.Hooks {
-		if err := hook.Subscribe(wh.URL, wh.Scope); err != nil {
+		if err := hook.Subscribe(context.Background(), wh.URL, wh.Scope); err != nil {
 			log.Error(err, "hook subscription failed")
 			OsExit(2)
 			return

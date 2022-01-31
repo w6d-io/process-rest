@@ -162,7 +162,7 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/ugorji/go/codec v1.1.7
 github.com/ugorji/go/codec
-# github.com/w6d-io/hook v0.2.0
+# github.com/w6d-io/hook v0.2.1
 ## explicit
 github.com/w6d-io/hook
 github.com/w6d-io/hook/http

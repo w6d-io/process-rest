@@ -16,10 +16,6 @@ Created on 20/03/2021
 */
 package process
 
-var (
-	payload = new(Payload)
-)
-
 // payload is the values from request
 type Payload map[string]interface{}
 

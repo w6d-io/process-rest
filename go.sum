@@ -1778,6 +1778,8 @@ github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df/go.mod h1:JP3t17
 github.com/vishvananda/netns v0.0.0-20200728191858-db3c7e526aae/go.mod h1:DD4vA1DwXk04H54A1oHXtwZmA0grkVMdPxx/VGLCah0=
 github.com/w6d-io/hook v0.2.0 h1:RMfSFqECWm2abWXr9jfRLBHh1kmWH7qS1eMhhqRdvLE=
 github.com/w6d-io/hook v0.2.0/go.mod h1:MzFZrUO/jT1UR7HfPJL05wcXS5h2l6QIi8c8ZMEI3o8=
+github.com/w6d-io/hook v0.2.1 h1:ZuRPgvgIUPa3NDEt8Gor/2QfYLyyhmILpE7zMFLh2CY=
+github.com/w6d-io/hook v0.2.1/go.mod h1:MzFZrUO/jT1UR7HfPJL05wcXS5h2l6QIi8c8ZMEI3o8=
 github.com/w6d-io/x v0.11.0 h1:dyROdJBGTlVF2uShrdtd7Lyy5s6bkx3NMx15vOhAvB0=
 github.com/w6d-io/x v0.11.0/go.mod h1:MPgeIleQF2L3uU0CbqfOpnpIriYjDwGv3j25tFslJcw=
 github.com/willf/bitset v1.1.11-0.20200630133818-d5bec3311243/go.mod h1:RjeCKbqT1RxIR/KWY6phxZiaY1IyutSBfGjNPySAYV4=

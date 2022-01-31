@@ -52,7 +52,7 @@ func Run() error {
 
 	server.Handler = engine
 
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 2)
 	signal.Notify(quit, os.Interrupt)
 	signal.Notify(quit, os.Kill)
 	go func() {

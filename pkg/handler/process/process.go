@@ -47,7 +47,7 @@ func Process(c *gin.Context) {
 
 func InitProcess(c *gin.Context) (string, error) {
 	log := logx.WithName(nil, "Process.InitProcess").WithValues("correlation_id", GetCorrelationID(c))
-
+	payload := new(Payload)
 	if err := c.BindJSON(payload); err != nil {
 		log.Error(err, "unmarshal failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "unmarshal failed"}

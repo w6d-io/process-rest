@@ -16,11 +16,13 @@ Created on 21/03/2021
 package process_test
 
 import (
+	"context"
 	"errors"
-	"github.com/w6d-io/hook"
-	"github.com/w6d-io/process-rest/internal/config"
 	"io/ioutil"
 	"os"
+
+	"github.com/w6d-io/hook"
+	"github.com/w6d-io/process-rest/internal/config"
 
 	"github.com/w6d-io/process-rest/internal/process"
 
@@ -82,7 +84,7 @@ var _ = Describe("Process", func() {
 			//Expect(err).To(Succeed())
 		})
 		It("runs main script with success", func() {
-			err := hook.Subscribe("http://localhost:8888", ".*")
+			err := hook.Subscribe(context.Background(), "http://localhost:8888", ".*")
 			Expect(err).To(Succeed())
 			config.AddMainScript(filename)
 			p := new(process.Process)
