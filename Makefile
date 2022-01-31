@@ -43,9 +43,9 @@ vendor:
 	go mod vendor
 
 # Build the docker image
-build: test
+docker-build: test
 	docker build  --build-arg=VERSION=${VERSION} --build-arg=VCS_REF=${VCS_REF} --build-arg=BUILD_DATE=${BUILD_DATE}  -t ${IMG} .
 
 # Push the docker image
-push:
+docker-push:
 	docker push ${IMG}

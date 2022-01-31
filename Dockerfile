@@ -26,7 +26,7 @@ RUN  go build    \
      -a -o process-rest cmd/process-rest/main.go
 
 
-FROM w6dio/kubectl:v1.2.0
+FROM w6dio/kubectl:v1.4.0
 ARG VCS_REF
 ARG BUILD_DATE
 ARG VERSION
