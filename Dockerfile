@@ -22,7 +22,7 @@ COPY pkg/ pkg/
 # Build
 RUN  go build    \
     -mod=vendor \
-    -ldflags="-X 'github.com/w6d-io/process-rest/config.Version=${VERSION}' -X 'github.com/w6d-io/process-rest/config.Revision=${VCS_REF}' -X 'github.com/w6d-io/process-rest/config.GoVersion=go${GOVERSION}' -X 'github.com/w6d-io/process-rest/config.Built=${BUILD_DATE}' -X 'github.com/w6d-io/process-rest/config.OsArch=${GOOS}/${GOARCH}'" \
+    -ldflags="-X 'github.com/w6d-io/process-rest/internal/config.Version=${VERSION}' -X 'github.com/w6d-io/process-rest/internal/config.Revision=${VCS_REF}' -X 'github.com/w6d-io/process-rest/internal/config.GoVersion=go${GOVERSION}' -X 'github.com/w6d-io/process-rest/internal/config.Built=${BUILD_DATE}' -X 'github.com/w6d-io/process-rest/internal/config.OsArch=${GOOS}/${GOARCH}'" \
     -a -o process-rest cmd/process-rest/main.go
 
 
