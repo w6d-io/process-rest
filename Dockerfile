@@ -13,7 +13,6 @@ WORKDIR /workspace
 # Copy the Go Modules manifests
 COPY go.mod go.mod
 COPY go.sum go.sum
-COPY vendor/ vendor/
 # Copy the go source
 COPY cmd/ cmd/
 COPY internal/ internal/
@@ -21,7 +20,6 @@ COPY pkg/ pkg/
 
 # Build
 RUN  go build    \
-    -mod=vendor \
     -ldflags="-X 'github.com/w6d-io/process-rest/internal/config.Version=${VERSION}' -X 'github.com/w6d-io/process-rest/internal/config.Revision=${VCS_REF}' -X 'github.com/w6d-io/process-rest/internal/config.GoVersion=go${GOVERSION}' -X 'github.com/w6d-io/process-rest/internal/config.Built=${BUILD_DATE}' -X 'github.com/w6d-io/process-rest/internal/config.OsArch=${GOOS}/${GOARCH}'" \
     -a -o process-rest cmd/process-rest/main.go
 
