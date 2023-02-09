@@ -15,7 +15,7 @@ github.com/evanphx/json-patch
 github.com/fsnotify/fsnotify
 # github.com/gin-contrib/sse v0.1.0
 github.com/gin-contrib/sse
-# github.com/gin-gonic/gin v1.7.2
+# github.com/gin-gonic/gin v1.7.7
 ## explicit
 github.com/gin-gonic/gin
 github.com/gin-gonic/gin/binding
@@ -119,7 +119,6 @@ github.com/onsi/gomega/matchers/support/goraph/node
 github.com/onsi/gomega/matchers/support/goraph/util
 github.com/onsi/gomega/types
 # github.com/pkg/errors v0.9.1
-## explicit
 github.com/pkg/errors
 # github.com/prometheus/client_golang v1.7.1
 github.com/prometheus/client_golang/prometheus
