@@ -1,7 +1,7 @@
 # Build the process-rest binary
-ARG GOVERSION=1.16
+ARG GOVERSION=1.19
 FROM golang:$GOVERSION as builder
-ARG GOVERSION=1.16
+ARG GOVERSION=1.19
 ARG VCS_REF
 ARG BUILD_DATE
 ARG VERSION
@@ -9,7 +9,7 @@ ENV GO111MODULE="on" \
     GOOS=linux       \
     GOARCH=amd64
 
-WORKDIR /workspace
+WORKDIR /github.com/w6d-io/process-rest
 # Copy the Go Modules manifests
 COPY go.mod go.mod
 COPY go.sum go.sum
@@ -43,7 +43,7 @@ RUN curl -sSL https://git.io/get-mo -o mo && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /
-COPY --from=builder /workspace/process-rest /usr/local/bin/process-rest
+COPY --from=builder /github.com/w6d-io/process-rest/process-rest /usr/local/bin/process-rest
 
 ENTRYPOINT ["/usr/local/bin/process-rest"]
 CMD ["serve"]
