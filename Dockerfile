@@ -21,10 +21,10 @@ COPY pkg/ pkg/
 # Build
 RUN  go build    \
     -ldflags="-X 'github.com/w6d-io/process-rest/internal/config.Version=${VERSION}' -X 'github.com/w6d-io/process-rest/internal/config.Revision=${VCS_REF}' -X 'github.com/w6d-io/process-rest/internal/config.GoVersion=go${GOVERSION}' -X 'github.com/w6d-io/process-rest/internal/config.Built=${BUILD_DATE}' -X 'github.com/w6d-io/process-rest/internal/config.OsArch=${GOOS}/${GOARCH}'" \
-    -a -o process-rest cmd/process-rest/main.go
+    -a -o process-rest main.go
 
 
-FROM w6dio/kubectl:v1.4.0
+FROM w6dio/kubectl:v1.4.3
 ARG VCS_REF
 ARG BUILD_DATE
 ARG VERSION
