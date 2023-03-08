@@ -19,6 +19,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/w6d-io/process-rest/pkg/handler/health"
 
 	. "github.com/onsi/ginkgo"

@@ -17,11 +17,13 @@ Created on 20/03/2021
 package router_test
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"github.com/w6d-io/process-rest/pkg/router"
-	"time"
 )
 
 var _ = Describe("Router", func() {

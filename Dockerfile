@@ -13,14 +13,13 @@ WORKDIR /github.com/w6d-io/process-rest
 # Copy the Go Modules manifests
 COPY go.mod go.mod
 COPY go.sum go.sum
+RUN go mod tidy
 # Copy the go source
-COPY cmd/ cmd/
-COPY internal/ internal/
-COPY pkg/ pkg/
+COPY . .
 
 # Build
 RUN  go build    \
-    -ldflags="-X 'github.com/w6d-io/process-rest/internal/config.Version=${VERSION}' -X 'github.com/w6d-io/process-rest/internal/config.Revision=${VCS_REF}' -X 'github.com/w6d-io/process-rest/internal/config.GoVersion=go${GOVERSION}' -X 'github.com/w6d-io/process-rest/internal/config.Built=${BUILD_DATE}' -X 'github.com/w6d-io/process-rest/internal/config.OsArch=${GOOS}/${GOARCH}'" \
+    -ldflags="-X 'github.com/w6d-io/process-rest/internal/config.Version=${VERSION}' -X 'github.com/w6d-io/process-rest/internal/config.Revision=${VCS_REF}' -X 'github.com/w6d-io/process-rest/internal/config.Built=${BUILD_DATE}'" \
     -a -o process-rest main.go
 
 

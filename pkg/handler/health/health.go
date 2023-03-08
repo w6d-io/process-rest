@@ -17,6 +17,7 @@ package health
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"github.com/w6d-io/process-rest/pkg/router"
 )
 

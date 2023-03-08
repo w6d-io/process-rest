@@ -23,8 +23,9 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/w6d-io/hook"
 	"gopkg.in/yaml.v3"
+
+	"github.com/w6d-io/hook"
 
 	"github.com/w6d-io/x/cmdx"
 	"github.com/w6d-io/x/logx"
