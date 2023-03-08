@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,13 +25,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	ctrl "sigs.k8s.io/controller-runtime"
+	"github.com/w6d-io/x/logx"
 )
 
 // LogMiddleware logs a gin HTTP request in JSON format, with some additional custom key/values
 func LogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log := ctrl.Log.WithName("gin")
+		log := logx.WithName(nil, "Gin")
 		// Start timer
 		start := time.Now()
 

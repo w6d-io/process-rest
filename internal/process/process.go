@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,18 +17,19 @@ Created on 20/03/2021
 package process
 
 import (
+	"context"
 	"fmt"
-	"github.com/w6d-io/hook"
-	"github.com/w6d-io/process-rest/internal/config"
 	"os/exec"
 	"path"
 	"strings"
 
-	ctrl "sigs.k8s.io/controller-runtime"
+	"github.com/w6d-io/hook"
+	"github.com/w6d-io/process-rest/internal/config"
+	"github.com/w6d-io/x/logx"
 )
 
 func Run(name string, arg ...string) (string, error) {
-	log := ctrl.Log.WithName("Process")
+	log := logx.WithName(nil, "Process.Run")
 	log.V(1).Info("build command")
 	cmd := exec.Command(name, arg...)
 
@@ -43,7 +44,7 @@ func Run(name string, arg ...string) (string, error) {
 }
 
 func (p *Process) LoopProcess(scripts []string, arg ...string) error {
-	log := ctrl.Log.WithName("LoopProcess")
+	log := logx.WithName(nil, "Process.LoopProcess")
 	for _, script := range scripts {
 		log.Info("run", "script", script)
 		arg = append([]string{script}, arg...)
@@ -68,22 +69,26 @@ func (p *Process) LoopProcess(scripts []string, arg ...string) error {
 }
 
 func (p *Process) PreProcess(arg ...string) error {
-	ctrl.Log.WithName("PreProcess").V(1).Info("loop process")
+	log := logx.WithName(nil, "Process.PreProcess")
+	log.V(1).Info("loop process")
 	return p.LoopProcess(config.GetPreScript(), arg...)
 }
 
 func (p *Process) PostProcess(arg ...string) error {
-	ctrl.Log.WithName("PostProcess").V(1).Info("loop process")
+	log := logx.WithName(nil, "Process.PostProcess")
+	log.V(1).Info("loop process")
 	return p.LoopProcess(config.GetPostScript(), arg...)
 }
 
 func (p *Process) MainProcess(arg ...string) error {
-	ctrl.Log.WithName("MainProcess").V(1).Info("loop process")
+	log := logx.WithName(nil, "Process.MainProcess")
+	log.V(1).Info("loop process")
 	return p.LoopProcess(config.GetMainScript(), arg...)
 }
 
 func Execute(id string, arg ...string) {
-	log := ctrl.Log.WithName("Execute")
+	log := logx.WithName(nil, "Process.Execute")
+	log.V(1).Info("loop process")
 	p := new(Process)
 	errc := make(chan error)
 	go func() {
@@ -122,7 +127,7 @@ func Execute(id string, arg ...string) {
 }
 
 func (p *Process) Notify(id string, scope string, err error) {
-	log := ctrl.Log.WithName("Notify")
+	log := logx.WithName(nil, "Process.Notify")
 
 	status := &Status{
 		Success: err == nil,
@@ -130,7 +135,7 @@ func (p *Process) Notify(id string, scope string, err error) {
 		ID:      id,
 	}
 	log.V(1).Info("send", "scope", scope)
-	_ = hook.Send(status, ctrl.Log, scope)
+	_ = hook.Send(context.Background(), status, scope)
 }
 
 func (p *Process) GetLogMessage(err error) string {

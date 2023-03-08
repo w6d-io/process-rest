@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@ Created on 20/03/2021
 package config
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -25,46 +26,68 @@ import (
 	"github.com/w6d-io/hook"
 	"gopkg.in/yaml.v3"
 
-	ctrl "sigs.k8s.io/controller-runtime"
+	"github.com/w6d-io/x/cmdx"
+	"github.com/w6d-io/x/logx"
 )
 
-// get the config file and process it
-func New(filename string) error {
-	log := ctrl.Log.WithName("Config")
-	log.V(1).Info("read config file")
+var (
+	// Version microservice version
+	Version = ""
+
+	// Revision git commit
+	Revision = ""
+
+	// Built Date built
+	Built = ""
+
+	// CfgFile contain the path of the config file
+	CfgFile string
+
+	// OsExit is hack for unit-test
+	OsExit = os.Exit
+)
+
+// Init load the config file
+func Init() {
+	log := logx.WithName(nil, "Config.Init")
 	config = new(Config)
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(CfgFile)
 	if err != nil {
 		log.Error(err, "error reading the configuration")
-		return err
+		OsExit(2)
+		return
 	}
-	if err := yaml.Unmarshal(data, config); err != nil {
-		log.Error(err, "Error unmarshal the configuration")
-		return err
-	}
-	if err := config.AddPreScript(); err != nil {
-		return err
-	}
-	if err := config.AddProcessScript(); err != nil {
-		return err
-	}
-	if err := config.AddPostScript(); err != nil {
-		return err
-	}
+	err = yaml.Unmarshal(data, config)
+	cmdx.Must(err, "error unmarshal the configuration")
+
+	err = yaml.Unmarshal(data, config)
+	cmdx.Must(err, "Error unmarshal the configuration")
+
+	err = config.AddPreScript()
+	cmdx.Must(err, "Error checking AddPreScript")
+
+	err = config.AddProcessScript()
+	cmdx.Must(err, "Error checking AddProcessScript")
+
+	err = config.AddPostScript()
+	cmdx.Must(err, "Error checking AddPostScript")
+
 	if !Validate() {
-		return errors.New("a process script should be set")
+		log.Error(errors.New("a process script should be set"), "")
+		OsExit(2)
+		return
 	}
 	for _, wh := range config.Hooks {
-		if err := hook.Subscribe(wh.URL, wh.Scope); err != nil {
+		if err := hook.Subscribe(context.Background(), wh.URL, wh.Scope); err != nil {
 			log.Error(err, "hook subscription failed")
-			return err
+			OsExit(2)
+			return
 		}
 	}
-	return nil
 }
 
 func (c *Config) AddPostScript() error {
-	log := ctrl.Log.WithName("Config").WithName("AddPostScript")
+	log := logx.WithName(nil, "Config.AddPostScript")
 	if c.PostScriptFolder == "" {
 		return nil
 	}
@@ -84,7 +107,7 @@ func (c *Config) AddPostScript() error {
 }
 
 func (c *Config) AddPreScript() error {
-	log := ctrl.Log.WithName("Config").WithName("AddPreScript")
+	log := logx.WithName(nil, "Config.AddPreScript")
 	if c.PreScriptFolder == "" {
 		return nil
 	}
@@ -104,7 +127,7 @@ func (c *Config) AddPreScript() error {
 }
 
 func (c *Config) AddProcessScript() error {
-	log := ctrl.Log.WithName("Config").WithName("AddMainScript")
+	log := logx.WithName(nil, "Config.AddMainScript")
 	if c.MainScriptFolder == "" {
 		return nil
 	}
@@ -154,7 +177,7 @@ func Reset() {
 }
 
 func Validate() bool {
-	log := ctrl.Log.WithName("Validate")
+	log := logx.WithName(nil, "Config.Validate")
 	log.V(1).Info("contain", "pre_script", preScript,
 		"main_script", mainScript,
 		"post_script", postScript)

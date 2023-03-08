@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,14 +15,6 @@ limitations under the License.
 Created on 20/03/2021
 */
 package process
-
-import (
-	ctrl "sigs.k8s.io/controller-runtime"
-)
-
-var (
-	logger = ctrl.Log.WithName("Process")
-)
 
 // payload is the values from request
 type Payload map[string]interface{}
