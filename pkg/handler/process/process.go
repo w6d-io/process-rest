@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,10 +18,20 @@ package process
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/w6d-io/x/logx"
+
+	"io/ioutil"
+
 	"github.com/w6d-io/process-rest/internal/process"
 	"github.com/w6d-io/process-rest/pkg/router"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
+)
+
+var (
+	// YamlMarshal is hack for unit-test
+	YamlMarshal = yaml.Marshal
+	// IoTempFile is hack for unit-test
+	IoTempFile = ioutil.TempFile
 )
 
 func init() {
@@ -42,30 +52,30 @@ func Process(c *gin.Context) {
 }
 
 func InitProcess(c *gin.Context) (string, error) {
-	logger = logger.WithValues("correlation_id", GetCorrelationID(c))
+	log := logx.WithName(nil, "Process.InitProcess").WithValues("correlation_id", GetCorrelationID(c))
 	payload := new(Payload)
 	if err := c.BindJSON(payload); err != nil {
-		logger.Error(err, "unmarshal failed")
+		log.Error(err, "unmarshal failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "unmarshal failed"}
 	}
-	values, err := yaml.Marshal(payload)
+	values, err := YamlMarshal(payload)
 	if err != nil {
-		logger.Error(err, "marshal payload failed")
+		log.Error(err, "marshal payload failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "marshal payload failed"}
 	}
-	file, err := ioutil.TempFile("", "values-*.yaml")
+	file, err := IoTempFile("", "values-*.yaml")
 	if err != nil {
-		logger.Error(err, "create payload failed")
+		log.Error(err, "create payload failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "create payload failed"}
 	}
 	if _, err := file.Write(values); err != nil {
-		logger.Error(err, "write payload failed")
+		log.Error(err, "write payload failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "write payload failed"}
 	}
 	filename := file.Name()
 	err = file.Close()
 	if err != nil {
-		logger.Error(err, "create payload failed")
+		log.Error(err, "create payload failed")
 		return "", &ErrorProcess{Code: 500, Cause: err, Message: "create payload failed"}
 	}
 	return filename, nil

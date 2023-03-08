@@ -3,10 +3,10 @@ name: Release docker image
 on:
   push:
     tags:
-      - v*
+      - "v*"
   create:
     tags:
-      - v*
+      - "v*"
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -55,4 +55,3 @@ jobs:
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-
