@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@ package process_test
 
 import (
 	"errors"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -27,11 +26,12 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/w6d-io/process-rest/pkg/handler/process"
-	"k8s.io/apimachinery/pkg/util/framer"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"gopkg.in/yaml.v3"
+	"k8s.io/apimachinery/pkg/util/framer"
+
+	"github.com/w6d-io/process-rest/pkg/handler/process"
 )
 
 var _ = Describe("Process", func() {

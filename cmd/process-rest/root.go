@@ -15,9 +15,10 @@ limitations under the License.
 Created on 20/03/2021
 */
 
-package main
+package processrest
 
 import (
+	"context"
 	"os"
 
 	"github.com/ory/x/cmdx"
@@ -28,24 +29,20 @@ import (
 	"github.com/w6d-io/x/logx"
 )
 
-var rootCmd = &cobra.Command{
-	Use: "project",
-	Run: func(cmd *cobra.Command, args []string) {
-		log := logx.WithName(nil, "Main.Command")
-		err := cmd.Help()
-		if err != nil {
-			log.Error(err, "cannot show help")
-		}
-	},
-}
+var (
+	rootCmd = &cobra.Command{
+		Use: "project",
+	}
+	OsExit = os.Exit
+)
 
-func main() {
-	log := logx.WithName(nil, "Main.Command")
+func Execute() {
+	log := logx.WithName(context.Background(), "Main.Command")
 
 	rootCmd.AddCommand(cmdx.Version(&config.Version, &config.Revision, &config.Built))
 	rootCmd.AddCommand(serve.Cmd)
 	if err := rootCmd.Execute(); err != nil {
 		log.Error(err, "exec command failed")
-		os.Exit(1)
+		OsExit(1)
 	}
 }
