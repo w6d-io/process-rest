@@ -1,7 +1,7 @@
 # Build the process-rest binary
-ARG GOVERSION=1.19
+ARG GOVERSION=1.20
 FROM golang:$GOVERSION as builder
-ARG GOVERSION=1.19
+ARG GOVERSION=1.20
 ARG VCS_REF
 ARG BUILD_DATE
 ARG VERSION
@@ -22,7 +22,7 @@ RUN  go build    \
     -a -o process-rest main.go
 
 
-FROM w6dio/kubectl:v1.4.3
+FROM w6dio/kubectl:latest
 ARG VCS_REF
 ARG BUILD_DATE
 ARG VERSION
@@ -30,10 +30,10 @@ ARG PROJECT_URL
 ARG USER_EMAIL="david.alexandre@w6d.io"
 ARG USER_NAME="David ALEXANDRE"
 LABEL maintainer="${USER_NAME} <${USER_EMAIL}>" \
-    io.w6d.ci.vcs-ref=$VCS_REF       \
-    io.w6d.ci.vcs-url=$PROJECT_URL   \
-    io.w6d.ci.build-date=$BUILD_DATE \
-    io.w6d.ci.version=$VERSION
+    io.w6d.vcs-ref=$VCS_REF       \
+    io.w6d.vcs-url=$PROJECT_URL   \
+    io.w6d.build-date=$BUILD_DATE \
+    io.w6d.version=$VERSION
 RUN curl -sSL https://git.io/get-mo -o mo && \
     chmod +x mo && \
     mv mo /usr/local/bin/ && \
