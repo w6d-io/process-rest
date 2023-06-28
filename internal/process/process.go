@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 Created on 20/03/2021
 */
+
 package process
 
 import (
@@ -36,7 +37,11 @@ func Run(name string, arg ...string) (string, error) {
 	log.V(1).Info("exec command and get output", "script", cmd.String())
 	output, err := cmd.Output()
 	if err != nil {
-		log.Error(err, "script failed", "script", cmd.String())
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			log.Error(err, "script failed", "script", cmd.String(), "stdout", string(output), "exit_code", exitErr.ExitCode(), "stderr", string(exitErr.Stderr), "stdout")
+			return string(exitErr.Stderr), exitErr
+		}
+		log.Error(err, "script failed", "script", cmd.String(), "output", string(output))
 		return string(output), err
 	}
 	log.V(1).Info("script succeeded", "output", string(output))
