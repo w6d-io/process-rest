@@ -1,7 +1,7 @@
 VERSION    ?= $(shell basename /$(shell git symbolic-ref --quiet HEAD 2> /dev/null ) )
 VCS_REF    = $(shell git rev-parse HEAD)
 BUILD_DATE = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-
+export ACK_GINKGO_DEPRECATIONS = 1.16.5
 export GO111MODULE  := on
 export NEXT_TAG     ?=
 export CGO_ENABLED   = 1
@@ -63,7 +63,7 @@ vet:
 .PHONY: test
 test: fmt vet
 	go test $(GOTAGS) -v -coverpkg=./... -coverprofile=cover.out ./...
-	@go tool cover -func cover.out | grep total
+#	@go tool cover -func cover.out | grep total
 
 # Formats the code
 .PHONY: format

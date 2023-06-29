@@ -38,7 +38,7 @@ func Run(name string, arg ...string) (string, error) {
 	output, err := cmd.Output()
 	if err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
-			log.Error(err, "script failed", "script", cmd.String(), "stdout", string(output), "exit_code", exitErr.ExitCode(), "stderr", string(exitErr.Stderr), "stdout")
+			log.Error(err, "script failed", "script", cmd.String(), "stdout", string(output), "exit_code", exitErr.ExitCode(), "stderr", string(exitErr.Stderr))
 			return string(exitErr.Stderr), exitErr
 		}
 		log.Error(err, "script failed", "script", cmd.String(), "output", string(output))
