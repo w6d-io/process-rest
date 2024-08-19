@@ -36,9 +36,7 @@ LABEL maintainer="${USER_NAME} <${USER_EMAIL}>" \
     io.w6d.version=$VERSION
 RUN curl -sSL https://git.io/get-mo -o mo && \
     chmod +x mo && \
-    mv mo /usr/local/bin/ && \
-    apt update && apt install -y postgresql-client && \
-    rm -rf /var/lib/apt/lists/*
+    mv mo /usr/local/bin/
 
 WORKDIR /
 COPY --from=builder /github.com/w6d-io/process-rest/process-rest /usr/local/bin/process-rest

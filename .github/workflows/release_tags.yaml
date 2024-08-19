@@ -14,8 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: read
+      contents: write
       packages: write
+      pull-requests: write
       attestations: write
     steps:
       - name: Checkout
@@ -40,13 +41,11 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Build variables
-        id: build_var
+        id: build_env
         run: |
-          echo "SOURCE_NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
-          echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
-          echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-          echo "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
-          echo "PROJECT_URL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" >> $GITHUB_OUTPUT
+          echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+          echo "PROJECT_URL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" >> $GITHUB_ENV
           echo "VCS_REF=$GITHUB_SHA" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
@@ -56,12 +55,27 @@ jobs:
           context: .
           push: true
           build-args: |
-            VERSION=${{ steps.build_var.outputs.SOURCE_TAG }}
-            VCS_REF=${{ steps.build_var.outputs.VCS_REF }}
-            BUILD_DATE=${{ steps.build_var.outputs.BUILD_DATE }}
-            PROJECT_URL=${{ steps.build_var.outputs.PROJECT_URL }}
+            VERSION=${{ env.SOURCE_TAG }}
+            VCS_REF=${{ env.VCS_REF }}
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            PROJECT_URL=${{ env.PROJECT_URL }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Use Docker Image URL in Release Drafter
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.tags }}
+        run: |
+          sed -i "s|{{IMAGE_TAG}}|${IMAGE_TAG}|g" .github/release-drafter.yml
+
+      - name: Run Release Drafter
+        id: create_release
+        uses: release-drafter/release-drafter@v5
+        with:
+          config-name: release-drafter.yml
+          publish: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #      - name: Generate artifact attestation
 #        uses: actions/attest-build-provenance@v1
@@ -69,3 +83,4 @@ jobs:
 #          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
 #          subject-digest: ${{ steps.push.outputs.digest }}
 #          push-to-registry: true
+
