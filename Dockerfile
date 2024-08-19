@@ -1,5 +1,5 @@
 # Build the process-rest binary
-ARG GOVERSION=1.20
+ARG GOVERSION=1.21
 FROM golang:$GOVERSION as builder
 ARG GOVERSION=1.20
 ARG VCS_REF

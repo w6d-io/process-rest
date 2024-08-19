@@ -1,4 +1,4 @@
-name: Check
+name: Test and coverage
 
 on:
   push:
@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Git Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v5
       with:
-        go-version: 1.19
+        go-version: 1.21
 
     - name: Test
       run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...

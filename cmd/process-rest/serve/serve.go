@@ -17,13 +17,15 @@ package serve
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/w6d-io/x/toolx"
+	"strconv"
 
 	"github.com/w6d-io/x/logx"
 	"github.com/w6d-io/x/pflagx"
 
-	config "github.com/w6d-io/process-rest/internal/config"
+	"github.com/w6d-io/process-rest/internal/config"
 	"github.com/w6d-io/process-rest/pkg/handler"
-	router "github.com/w6d-io/process-rest/pkg/router"
+	"github.com/w6d-io/process-rest/pkg/router"
 )
 
 var (
@@ -38,8 +40,11 @@ var (
 
 func init() {
 	cobra.OnInitialize(config.Init)
-
-	pflagx.CallerSkip = -2
+	callSkip := 0
+	if cs, err := strconv.Atoi(toolx.Getenv("CALL_SKIP", "0")); err == nil {
+		callSkip = cs
+	}
+	pflagx.CallerSkip = callSkip
 	pflagx.Init(Cmd, &config.CfgFile)
 }
 
