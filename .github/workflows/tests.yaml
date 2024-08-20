@@ -6,9 +6,17 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: w6d-io/process-rest
+
 jobs:
   tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      checks: write
+      actions: write
     steps:
       - name: Git Checkout
         uses: actions/checkout@v4
@@ -26,8 +34,9 @@ jobs:
 
       - name: coverage
         uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           flags: unittests
           fail_ci_if_error: true # optional (default = false)
           verbose: false # optional (default = false)
