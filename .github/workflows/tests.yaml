@@ -39,7 +39,7 @@ jobs:
         with:
           flags: unittests
           fail_ci_if_error: true # optional (default = false)
-          verbose: false # optional (default = false)
+          verbose: true # optional (default = false)
 
   docker-build:
     runs-on: ubuntu-latest
