@@ -34,7 +34,6 @@ jobs:
 
       - name: coverage
         uses: codecov/codecov-action@v3
-        env:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: unittests
