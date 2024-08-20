@@ -1,0 +1,24 @@
+name-template: 'Release v$NEXT_PATCH_VERSION'
+tag-template: 'v$NEXT_PATCH_VERSION'
+categories:
+  - title: '🚀 Features'
+    label: 'feature'
+  - title: '🐛 Bug Fixes'
+    label: 'bug'
+  - title: '🧰 Maintenance'
+    label: 'maintenance'
+change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
+exclude-labels:
+  - 'skip-changelog'
+template: |
+  ## What’s Changed
+
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$NEXT_PATCH_VERSION
+
+  ## Docker Image
+  The Docker image for this release can be pulled using the following command:
+  ```bash
+  docker pull {{IMAGE_TAG}} 
+  ```
