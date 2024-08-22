@@ -38,7 +38,6 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern={{version}}
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Build variables
         id: build_env
@@ -62,25 +61,12 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Use Docker Image URL in Release Drafter
-        env:
-          IMAGE_TAG: ${{ steps.meta.outputs.tags }}
-        run: |
-          sed -i "s|{{IMAGE_TAG}}|${IMAGE_TAG}|g" .github/release-drafter.yml
-
       - name: Run Release Drafter
         id: create_release
         uses: release-drafter/release-drafter@v5
         with:
           config-name: release-drafter.yml
           publish: true
+          version: ${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-#      - name: Generate artifact attestation
-#        uses: actions/attest-build-provenance@v1
-#        with:
-#          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
-#          subject-digest: ${{ steps.push.outputs.digest }}
-#          push-to-registry: true
-
