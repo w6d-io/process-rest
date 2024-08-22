@@ -1,5 +1,5 @@
-name-template: 'Release v$NEXT_PATCH_VERSION'
-tag-template: 'v$NEXT_PATCH_VERSION'
+name-template: 'Release v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
 categories:
   - title: '🚀 Features'
     label: 'feature'
@@ -15,10 +15,10 @@ template: |
 
   $CHANGES
 
-  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$NEXT_PATCH_VERSION
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
 
   ## Docker Image
   The Docker image for this release can be pulled using the following command:
   ```bash
-  docker pull {{IMAGE_TAG}} 
+  docker pull ghcr.io/w6d-io/process-rest:$RESOLVED_VERSION
   ```
